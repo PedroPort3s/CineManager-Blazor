@@ -4,6 +4,8 @@ namespace Shared
 {
     public class Class1
     {
-        public int teuPai { get; set; }
+        private string vapo = "";
+
+        public string Vapo { get => vapo; set => vapo = value; }
     }
 }
