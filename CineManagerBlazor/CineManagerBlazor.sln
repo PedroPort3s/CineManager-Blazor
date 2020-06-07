@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CineManagerBlazor.Server", "CineManagerBlazor\Server\CineManagerBlazor.Server.csproj", "{396AA93B-EF65-4140-85B6-506F2FECA078}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CineManagerBlazor.Server", "CineManagerBlazor\Server\CineManagerBlazor.Server.csproj", "{396AA93B-EF65-4140-85B6-506F2FECA078}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CineManagerBlazor.Client", "CineManagerBlazor\Client\CineManagerBlazor.Client.csproj", "{0A0A1AC2-50E0-489A-8AD8-2395E4245237}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CineManagerBlazor.Client", "CineManagerBlazor\Client\CineManagerBlazor.Client.csproj", "{0A0A1AC2-50E0-489A-8AD8-2395E4245237}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CineManagerBlazor.Shared", "CineManagerBlazor\Shared\CineManagerBlazor.Shared.csproj", "{10CEA48C-C7A1-4096-9116-208E0B6B6F0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CineManagerBlazor.Shared", "CineManagerBlazor\Shared\CineManagerBlazor.Shared.csproj", "{10CEA48C-C7A1-4096-9116-208E0B6B6F0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
