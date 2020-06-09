@@ -28,6 +28,8 @@ namespace CineManagerBlazor.Server
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddServerSideBlazor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,6 +56,7 @@ namespace CineManagerBlazor.Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+                endpoints.MapBlazorHub();
                 endpoints.MapControllers();
                 endpoints.MapFallbackToFile("index.html");
             });

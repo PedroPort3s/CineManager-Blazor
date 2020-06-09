@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace CineManagerBlazor.Shared.Models
 {
-    public class FilmeGenero
+    public class FilmeTipoFilme
     {
         public int Id { get; set; }
-        public Genero Genero { get; set; }
+        public TipoFilme TipoFilme { get; set; }
     }
 }
