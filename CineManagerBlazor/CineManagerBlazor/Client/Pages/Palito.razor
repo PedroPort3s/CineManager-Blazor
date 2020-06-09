@@ -1,0 +1,182 @@
+﻿@page "/palito"
+@inject IJSRuntime JsRuntime;
+
+
+@using JogoPalitoBlazor.Controller
+
+<h3>Palito</h3>
+
+
+<div class="row">
+    <div class="col-md-4">
+        <h4>Quantidade de Palitos</h4>
+    </div>
+</div>
+
+<div class="row form-group">
+    <input id="txtQuantPalitos" type="number" disabled="@botaoStart" @bind="qntPalitos" />
+    &nbsp;
+    <button class="btn btn-primary" @onclick="ComecarJogo" disabled="@PalitosIniciais(qntPalitos)">Começar o jogo</button>
+    &nbsp;
+
+    @if (qntPalitos <= 0)
+    {
+        <button onclick="window.location.reload();" class="btn btn-secondary">Reiniciar</button>
+    }
+</div>
+
+@if (botaoStart)
+{
+    <div class="row">
+        <div class="col-md-4">
+            <h4>Retirar Palitos</h4>
+        </div>
+    </div>
+
+    <div class="row form-group">
+        <input id="txtRetirada" type="number" @bind="retirada" />
+        &nbsp;
+        <button class="btn btn-primary" @onclick="ContinuarJogo" disabled="@botaoJogar">Retirar</button>
+    </div>
+}
+else
+{
+    <br />
+    <div class="row form-group">
+        <h4>Digite um valor para iniciar o jogo</h4>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(msgErro))
+{
+    JsRuntime.InvokeAsync<bool>("confirm", @msgErro);
+    msgErro = string.Empty;
+
+}
+
+
+
+@code {
+
+
+    string msgErro = string.Empty;
+
+    bool botaoStart = false;
+    bool botaoJogar = false;
+
+    short jogadaMaquina = 0;
+
+    private int qntPalitos = 0;
+
+    private int retirada = 0;
+
+    private bool primeiraJogada = false;
+
+    protected bool PalitosIniciais(int inicio)
+    {
+        if (inicio >= 20 && inicio <= 30)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    private void ComecarJogo()
+    {
+        try
+        {
+
+            PalitoController palitoController = new PalitoController();
+            palitoController.PrimeiraJogada(ref qntPalitos, out jogadaMaquina);
+            MostrarUsuario(true, jogadaMaquina, qntPalitos);
+
+        }
+        catch (Exception ex)
+        {
+            msgErro = ex.Message;
+        }
+    }
+
+    private void ContinuarJogo()
+    {
+        try
+        {
+            PalitoController palitoController = new PalitoController();
+            palitoController.ContinuarJogo(retirada, ref qntPalitos, out teste, out short jogadaMaquina);
+            MostrarUsuario(false, jogadaMaquina, qntPalitos);
+
+            if (!string.IsNullOrEmpty(palitoController.ganhou))
+            {
+                if (palitoController.ganhou == "MAQUINA")
+                {
+                    AcabarJogo(false);
+                }
+                else
+                {
+                    AcabarJogo(true);
+                }
+            }
+            else
+            {
+                //segue o baile boy
+            }
+        }
+        catch (Exception ex)
+        {
+
+            msgErro = ex.Message;
+        }
+
+    }
+
+    private void MostrarUsuario(bool primeiraJogada, int valor, int resto)
+    {
+        string msg = string.Empty;
+        if (primeiraJogada)
+        {
+            msg = "Eu começo " + Environment.NewLine;
+            msg += $"Retiro {valor} palito " + Environment.NewLine;
+            msg += "Sua vez... " + Environment.NewLine;
+            msg += $"Sobram {resto} Palitos" + Environment.NewLine;
+
+            botaoStart = true;
+
+        }
+        else
+        {
+            msg += $"Retiro {valor} palitos " + Environment.NewLine;
+            msg += "Sua vez..." + Environment.NewLine;
+            msg += $"Restam {resto} palitos" + Environment.NewLine;
+            msg += Environment.NewLine;
+        }
+
+        MostrarMsg(msg);
+    }
+
+    private void AcabarJogo(bool ganhou)
+    {
+        if (ganhou)
+            MostrarMsg("Você ganhou!  PARABÉNS!!");
+        else
+            MostrarMsg("Você perdeu!");
+
+    }
+
+    public string teste = "";
+    private void MostrarMsg(string msg)
+    {
+        teste += msg;
+    }
+}
+
+@if (!string.IsNullOrEmpty(teste))
+{
+    <div class="row">
+        <textarea class="form-control" readonly rows="5" style="height:250px;">
+                @teste
+            </textarea>
+    </div>
+}
