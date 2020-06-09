@@ -1,0 +1,26 @@
+﻿@page "/filme/edit/{filmeId:int}"
+@inject HttpClient client
+@inject NavigationManager uriHelper
+@inject IJSRuntime js
+
+
+<h3>Edit</h3>
+
+<Form textoBotao="Atualizar" filme="filme" OnValidSubmit="EditarFilme"/>
+
+@code {
+    [Parameter] public int filmeID { get; set; }
+    Filme filme = new Filme();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        filme = await client.GetFromJsonAsync<Filme>($"api/filmes/{filmeID}");
+    }
+
+    async Task EditarFilme()
+    {
+        await client.PutAsJsonAsync("api/filmes", filme);
+        await js.InvokeVoidAsync("alert", $"Filme {filme.Titulo} atualizado com sucesso!");
+        uriHelper.NavigateTo("filmes");
+    }
+}

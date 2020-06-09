@@ -1,0 +1,70 @@
+﻿@page "/filmes"
+@inject HttpClient client
+@inject IJSRuntime js
+
+<h3>Filmes</h3>
+
+<div class="form-group">
+    <a class="btn btn-success" href="filme/create"><i class="oi oi-plus"></i>Novo Filme</a>
+</div>
+<br />
+
+@if (filmes == null)
+{
+    <text>Carregando... </text>
+}
+else if(filmes.Length == 0)
+{
+    <text>Sem filmes cadastrados</text>
+}
+else
+{
+    <table cass="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Titulo</th>
+                <th>Duração</th>
+                <th>Data de Lançamento</th>
+                <th>Em cartaz até</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Filme filme in filmes)
+            {
+                <tr>
+                    <td>@filme.Id</td>
+                    <td>@filme.Titulo</td>
+                    <td>@filme.Duracao</td>
+                    <td>@filme.Lancamento</td>
+                    <td>@filme.EmCartazAte</td>
+                    <td>
+                        <a class="btn btn-success" href="filme/edit/@filme.Id">Editar</a>
+                        <button class="btn btn-danger" @onclick="@(() => Deletar(filme.Id))">Deletar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+        Filme[] filmes { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        filmes = await client.GetFromJsonAsync<Filme[]>("api/filmes");
+    }
+
+    async Task Deletar(int filmeId)
+    {
+        Filme filme = filmes.First(x => x.Id == filmeId);
+
+        if (await js.InvokeAsync<bool>("confirm", $"Deseja deletar o registro {filme.Titulo}"))
+        {
+            await client.DeleteAsync($"api/filmes/{filme.Id}");
+            await OnInitializedAsync();
+        }
+    }
+}

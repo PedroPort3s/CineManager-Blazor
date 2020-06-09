@@ -1,0 +1,17 @@
+﻿@page "/filme/create"
+@inject HttpClient http
+@inject NavigationManager uriHelper
+
+<h3>Create</h3>
+
+<Form textoBotao="Cadastrar" filme="@filme" OnValidSubmit="@CriarFilme"></Form>
+
+@code {
+    Filme filme = new Filme();
+
+    async Task CriarFilme()
+    {
+        await http.PostAsJsonAsync("api/Filmes", filme);
+        uriHelper.NavigateTo("Filmes");
+    }
+}
