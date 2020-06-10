@@ -1,0 +1,64 @@
+﻿@page "/salas"
+@inject HttpClient client
+@inject IJSRuntime JS
+
+<h3>Salas</h3>
+<h6>Adicionar uma sala</h6>
+
+<div class="form-group">
+    <a class="btn btn-success" href="salas/create"><i class="oi oi-plus"></i>Criar Sala</a>
+</div>
+<br />
+
+@if (salas == null)
+{
+    <text>Loading...</text>
+}
+else if (salas.Length == 0)
+{
+    <text>Nenhuma sala encontrada</text>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Nº de Poltronas</th>
+                <th>Tipo de Sala</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(Sala sala in salas)
+            {
+                <tr>
+                    <td>Nº de poltronas</td>
+                    <td>Tipo de Sala</td>
+                    <td>
+                        <a class="btn btn-success" href="salas/edit/@sala.Id">Editar</a>
+                        <button class="btn btn-danger" @onclick="@(() => Delete(sala.Id))">Excluir</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+
+@code{
+    Sala[] salas { get; set;}
+    protected override async Task OnInitializedAsync()
+    {
+        salas = await client.GetFromJsonAsync<Sala[]>("api/Salas");
+    }
+
+    async Task Delete(int salaId)
+    {
+        var sala = salas.First(x => x.Id == salaId);
+        if (await JS.InvokeAsync<bool>("confirm", $"Você deseja excluir {sala.Id}?"))
+        {
+            await client.DeleteAsync($"api/Salas/{salaId}");
+            await OnInitializedAsync();
+        }
+    }
+}

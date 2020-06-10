@@ -1,0 +1,75 @@
+﻿@page "/funcionarios"
+@inject HttpClient client
+@inject IJSRuntime js
+
+<h3>Funcionários</h3>
+<h6>Cadastrar funcionários</h6>
+<div class="form-group">
+    <a class="btn btn-success" href="funcionarios/create"><i class="oi oi-plus"></i>Criar</a>
+</div>
+<br />
+
+@if (funcionarios != null)
+{
+    <text>Carregando...</text>
+}
+else if (funcionarios.Length == 0)
+{
+    <text>Nenhum registro encontrado.</text>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Setor</th>
+                <th>CPF</th>
+                <th>RG</th>
+                <th>Salário</th>
+                <th>Cargo</th>
+                <th>Turno</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Funcionario func in funcionarios)
+            {
+                <tr>
+                    <td>@func.NomeCompleto</td>
+                    <td>@func.Setor</td>
+                    <td>@func.Cargo</td>
+                    <td>@func.Cpf</td>
+                    <td>@func.Rg</td>
+                    <td>@func.Salario</td>
+                    <td>@func.Cargo</td>
+                    <td>@func.Turno</td>
+                    <td>
+                        <a class="btn btn-success" href="funcionarios/edit/@func.Id">Editar</a>
+                        <button class="btn btn-danger" @onclick="@(() => Delete(func.Id))">Excluir</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code{
+    Funcionario[] funcionarios { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        funcionarios = await client.GetFromJsonAsync<Funcionario[]>("api/funcionarios");
+    }
+
+    async Task Delete(int funcionarioId)
+    {
+        var func = funcionarios.First(x => x.Id == funcionarioId);
+
+        if (await js.InvokeAsync<bool>("confirm", $"Tem certeza que deseja excluir o funcionario {func.NomeCompleto} ?")) ;
+        {
+            await client.DeleteAsync($"api/funcionario/{funcionarioId}");
+            await OnInitializedAsync();
+        }
+    }
+}

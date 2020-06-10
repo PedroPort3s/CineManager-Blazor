@@ -1,0 +1,13 @@
+﻿@page "/funcionarios/create"
+@inject HttpClient http
+@inject NavigationManager uriHelper
+
+
+@code {
+    Funcionario func = new Funcionario();
+    async Task CreateFuncionario()
+    {
+        await http.PostAsJsonAsync("api/funcionarios", func);
+        uriHelper.NavigateTo("funcionarios");
+    }
+}

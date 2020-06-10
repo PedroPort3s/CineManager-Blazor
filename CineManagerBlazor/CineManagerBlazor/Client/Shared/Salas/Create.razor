@@ -1,0 +1,16 @@
+﻿@page "/salas/create"
+@inject HttpClient http
+@inject NavigationManager uriHelper
+
+<h3>Criar</h3>
+
+<Form ButtonText="Criar Sala" sala="@sala" OnValidSubmit="@CreateSala"></Form>
+
+@code{
+    Sala sala = new Sala();
+    async Task CreateSala()
+    {
+        await http.PostAsJsonAsync("api/Salas", sala);
+        uriHelper.NavigateTo("Salas");
+    }
+}
