@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CineManagerBlazor.Shared.Models
 {
@@ -17,5 +14,6 @@ namespace CineManagerBlazor.Shared.Models
         [MinLength(1, ErrorMessage = "O campo {0} deve conter no mínimo {1} caracteres")]
         [Column(TypeName = "varchar(100)")]
         public string Nome{ get; set; }
+        public List<FilmeGenero> FilmesGeneros { get; set; } = new List<FilmeGenero>();  
     }
 }

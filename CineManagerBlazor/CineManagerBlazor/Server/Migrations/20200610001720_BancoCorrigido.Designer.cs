@@ -3,14 +3,16 @@ using System;
 using CineManagerBlazor.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CineManagerBlazor.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200610001720_BancoCorrigido")]
+    partial class BancoCorrigido
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -347,13 +349,13 @@ namespace CineManagerBlazor.Server.Migrations
 
             modelBuilder.Entity("CineManagerBlazor.Shared.Models.FilmeGenero", b =>
                 {
-                    b.HasOne("CineManagerBlazor.Shared.Models.Filme", "Filme")
+                    b.HasOne("CineManagerBlazor.Shared.Models.Filme", null)
                         .WithMany("Generos")
                         .HasForeignKey("filmeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CineManagerBlazor.Shared.Models.Genero", "Genero")
+                    b.HasOne("CineManagerBlazor.Shared.Models.Genero", null)
                         .WithMany("FilmesGeneros")
                         .HasForeignKey("generoId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -362,13 +364,13 @@ namespace CineManagerBlazor.Server.Migrations
 
             modelBuilder.Entity("CineManagerBlazor.Shared.Models.FilmeTipo", b =>
                 {
-                    b.HasOne("CineManagerBlazor.Shared.Models.Filme", "Filme")
+                    b.HasOne("CineManagerBlazor.Shared.Models.Filme", null)
                         .WithMany("TiposFilme")
                         .HasForeignKey("filmeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CineManagerBlazor.Shared.Models.TipoFilme", "TipoFilme")
+                    b.HasOne("CineManagerBlazor.Shared.Models.TipoFilme", null)
                         .WithMany("TiposFilmes")
                         .HasForeignKey("tipoFilmeId")
                         .OnDelete(DeleteBehavior.Cascade)

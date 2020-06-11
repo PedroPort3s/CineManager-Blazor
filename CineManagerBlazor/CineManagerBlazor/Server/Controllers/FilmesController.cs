@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CineManagerBlazor.Server;
 using CineManagerBlazor.Shared.Models;
+using CineManagerBlazor.Shared.DTOs;
+using AutoMapper;
 
 namespace CineManagerBlazor.Server.Controllers
 {
@@ -15,62 +14,61 @@ namespace CineManagerBlazor.Server.Controllers
     public class FilmesController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
 
-        public FilmesController(AppDbContext context)
+        public FilmesController(AppDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Filmes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Filme>>> GetFilme()
+        public async Task<ActionResult<Filme[]>> GetFilme()
         {
-            return await _context.Filme.ToListAsync();
+            return await _context.Filme.ToArrayAsync();
         }
 
         // GET: api/Filmes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Filme>> GetFilme(int id)
+        public async Task<ActionResult<DetalhesFilmeDTO>> GetFilme(int id)
         {
-            var filme = await _context.Filme.FindAsync(id);
+            var filme = await _context.Filme.Where(x => x.Id == id)
+                .Include(x => x.Generos).ThenInclude(x => x.Genero)
+                .Include(x => x.TiposFilme).ThenInclude(x => x.TipoFilme)
+                .FirstOrDefaultAsync();
 
             if (filme == null)
             {
                 return NotFound();
             }
 
-            return filme;
+            DetalhesFilmeDTO DTO = new DetalhesFilmeDTO();
+            DTO.Filme = filme;
+            DTO.Generos = filme.Generos.Select(x => x.Genero).ToList();
+            DTO.TiposFilme = filme.TiposFilme.Select(x => x.TipoFilme).ToList();
+
+            return DTO;
         }
 
         // PUT: api/Filmes/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutFilme(int id, Filme filme)
+        [HttpPut]
+        public async Task<ActionResult> PutFilme(Filme filme)
         {
-            if (id != filme.Id)
-            {
-                return BadRequest();
-            }
+            var filmeDB = await _context.Filme.FirstOrDefaultAsync(x => x.Id == filme.Id);
 
-            _context.Entry(filme).State = EntityState.Modified;
+            if (filmeDB == null) return NotFound();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FilmeExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            filmeDB = _mapper.Map(filme, filmeDB);
 
+            await _context.Database.ExecuteSqlInterpolatedAsync($"delete from filmestipo where filmeId = {filme.Id}; delete from filmegeneros where filmeId = {filme.Id}");
+
+            filmeDB.Generos = filme.Generos;
+            filmeDB.TiposFilme = filme.TiposFilme;
+
+            await _context.SaveChangesAsync();            
             return NoContent();
         }
 
@@ -78,12 +76,12 @@ namespace CineManagerBlazor.Server.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Filme>> PostFilme(Filme filme)
+        public async Task<ActionResult<int>> PostFilme(Filme filme)
         {
             _context.Filme.Add(filme);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetFilme", new { id = filme.Id }, filme);
+            return filme.Id;
         }
 
         // DELETE: api/Filmes/5
@@ -100,6 +98,29 @@ namespace CineManagerBlazor.Server.Controllers
             await _context.SaveChangesAsync();
 
             return filme;
+        }
+
+        [HttpGet("atualizar/{id}")]
+        public async Task<ActionResult<AtualizarFilmeDTO>> PutGet(int id)
+        {
+            var filmeResult = await GetFilme(id);
+
+            if (filmeResult.Result is NotFoundResult) 
+            {
+                return NotFound();
+            }
+
+            DetalhesFilmeDTO filmeDetail = filmeResult.Value;
+            List<int> idsGenerosSelecionados = filmeDetail.Generos.Select(x => x.Id).ToList();
+            List<Genero> generosNaoSelecionados = await _context.Generos.Where(x => !idsGenerosSelecionados.Contains(x.Id)).ToListAsync();
+
+            AtualizarFilmeDTO atualizarFilme = new AtualizarFilmeDTO();
+            atualizarFilme.Filme = filmeDetail.Filme;
+            atualizarFilme.GenerosSelecionados = filmeDetail.Generos;
+            atualizarFilme.GenerosNaoSelecionados = generosNaoSelecionados;
+            atualizarFilme.tiposDoFilme = filmeDetail.TiposFilme;
+
+            return atualizarFilme;
         }
 
         private bool FilmeExists(int id)

@@ -17,8 +17,4 @@
     <ProjectReference Include="..\Shared\CineManagerBlazor.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-  </ItemGroup>
-
 </Project>

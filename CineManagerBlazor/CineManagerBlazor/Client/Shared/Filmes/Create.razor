@@ -1,17 +1,36 @@
 ﻿@page "/filme/create"
+@inject IFilmeRepos filmesRepo
 @inject HttpClient http
 @inject NavigationManager uriHelper
 
 <h3>Create</h3>
 
-<Form textoBotao="Cadastrar" filme="@filme" OnValidSubmit="@CriarFilme"></Form>
+@if (GenerosNaoSelecionados != null)
+{
+    <Form textoBotao="Cadastrar" filme="@filme" OnValidSubmit="@CriarFilme" GenerosNaoSelecionados="GenerosNaoSelecionados"></Form>
+}
 
 @code {
     Filme filme = new Filme();
 
+    private List<Genero> GenerosNaoSelecionados;
+
+    protected override async Task OnInitializedAsync()
+    {
+        GenerosNaoSelecionados = await http.GetFromJsonAsync<List<Genero>>("api/Generos");
+    }
+
     async Task CriarFilme()
     {
-        await http.PostAsJsonAsync("api/Filmes", filme);
-        uriHelper.NavigateTo("Filmes");
+        try
+        {
+            await filmesRepo.CriarFilme(filme);
+            uriHelper.NavigateTo("Filmes");
+        }
+        catch (Exception)
+        {
+
+           
+        }
     }
 }

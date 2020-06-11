@@ -1,25 +1,32 @@
 ﻿@page "/filme/edit/{filmeId:int}"
-@inject HttpClient client
+@inject IFilmeRepos filmeRepo
 @inject NavigationManager uriHelper
 @inject IJSRuntime js
 
-
 <h3>Edit</h3>
-
-<Form textoBotao="Atualizar" filme="filme" OnValidSubmit="EditarFilme"/>
+@if (filme != null)
+{
+    <Form textoBotao="Atualizar" filme="filme" OnValidSubmit="EditarFilme" GenerosNaoSelecionados="GenerosNaoSelecionados" GenerosSelecionados="GenerosSelecionados" />
+}
 
 @code {
     [Parameter] public int filmeID { get; set; }
-    Filme filme = new Filme();
+    Filme filme;
+        
+    private List<Genero> GenerosNaoSelecionados = new List<Genero>();
+    private List<Genero> GenerosSelecionados = new List<Genero>();
 
-    protected async override Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
-        filme = await client.GetFromJsonAsync<Filme>($"api/filmes/{filmeID}");
+        var edit = await filmeRepo.GetFilmeAtualizar(filmeID);
+        filme = edit.Filme;
+        GenerosNaoSelecionados = edit.GenerosNaoSelecionados;
+        GenerosSelecionados = edit.GenerosSelecionados;
     }
 
     async Task EditarFilme()
     {
-        await client.PutAsJsonAsync("api/filmes", filme);
+        await filmeRepo.AtualizarFilme(filme);
         await js.InvokeVoidAsync("alert", $"Filme {filme.Titulo} atualizado com sucesso!");
         uriHelper.NavigateTo("filmes");
     }

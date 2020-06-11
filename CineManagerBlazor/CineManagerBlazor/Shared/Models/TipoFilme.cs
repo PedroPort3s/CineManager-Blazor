@@ -18,5 +18,7 @@ namespace CineManagerBlazor.Shared.Models
         [MinLength(1, ErrorMessage = "O campo {0} deve conter no mínimo {1} caractere.")]
         [Column(TypeName = "varchar(100)")]
         public string NomeTipoFilme { get; set; }
+
+        public List<FilmeTipo> TiposFilmes { get; set; } = new List<FilmeTipo>();
     }
 }

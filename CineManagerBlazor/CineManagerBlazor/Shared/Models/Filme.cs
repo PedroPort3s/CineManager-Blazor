@@ -40,7 +40,7 @@ namespace CineManagerBlazor.Shared.Models {
         public DateTime EmCartazAte { get; set; }
 
         public List<FilmeGenero> Generos { get; set; } = new List<FilmeGenero>();
-        public List<FilmeTipoFilme> TiposFilme { get; set; } = new List<FilmeTipoFilme>();
+        public List<FilmeTipo> TiposFilme { get; set; } = new List<FilmeTipo>();
 
         [NotMapped]
         public string ListaGenerosJoin { get; set; }

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using CineManagerBlazor.Client.Helpers;
+using CineManagerBlazor.Client.Repositorio;
 
 namespace CineManagerBlazor.Client
 {
@@ -18,8 +20,17 @@ namespace CineManagerBlazor.Client
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            ConfigureServices(builder.Services);
+
 
             await builder.Build().RunAsync();
+        }
+
+        private static void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IRepository, RepositorioInMemory>();
+            services.AddScoped<IHttpService, HttpService>();
+            services.AddScoped<IFilmeRepos, FilmesRepos>();
         }
     }
 }
