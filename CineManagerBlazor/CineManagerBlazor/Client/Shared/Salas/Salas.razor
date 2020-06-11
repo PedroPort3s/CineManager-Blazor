@@ -24,15 +24,15 @@ else
         <thead>
             <tr>
                 <th>Nº de Poltronas</th>
-                <th>Tipo de Sala</th>
+                @*<th>Tipo de Sala</th>*@
             </tr>
         </thead>
         <tbody>
             @foreach(Sala sala in salas)
             {
                 <tr>
-                    <td>Nº de poltronas</td>
-                    <td>Tipo de Sala</td>
+                    <td>@sala.NumPoltrona</td>
+                    @*<td></td>*@
                     <td>
                         <a class="btn btn-success" href="salas/edit/@sala.Id">Editar</a>
                         <button class="btn btn-danger" @onclick="@(() => Delete(sala.Id))">Excluir</button>
@@ -57,7 +57,7 @@ else
         var sala = salas.First(x => x.Id == salaId);
         if (await JS.InvokeAsync<bool>("confirm", $"Você deseja excluir {sala.Id}?"))
         {
-            await client.DeleteAsync($"api/Salas/{salaId}");
+            await client.DeleteAsync($"api/Salas/{sala.Id}");
             await OnInitializedAsync();
         }
     }

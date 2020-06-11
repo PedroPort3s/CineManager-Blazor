@@ -1,5 +1,16 @@
-﻿<h3>Create</h3>
+﻿@page "/fornecedores/create"
+@inject HttpClient http
+@inject NavigationManager uriHelper
+
+<h3>Criar</h3>
+
+<Form textoBotao="Cadastrar Fornecedor" forn="@forn" OnValidSubmit="@CreateFornecedor"></Form>
 
 @code {
-
+    Fornecedor forn = new Fornecedor();
+    async Task CreateFornecedor()
+    {
+        await http.PostAsJsonAsync("api/Fornecedores", forn);
+        uriHelper.NavigateTo("Fornecedores");
+    }
 }

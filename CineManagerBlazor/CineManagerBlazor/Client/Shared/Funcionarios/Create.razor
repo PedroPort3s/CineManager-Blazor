@@ -2,12 +2,16 @@
 @inject HttpClient http
 @inject NavigationManager uriHelper
 
+<h3>Criar</h3>
+
+<Form textoBotao="Cadastrar Funcionario"  funcionario="@funcionario" OnValidSubmit="@CreateFuncionario"></Form>
+
 
 @code {
-    Funcionario func = new Funcionario();
+    Funcionario funcionario = new Funcionario();
     async Task CreateFuncionario()
     {
-        await http.PostAsJsonAsync("api/funcionarios", func);
-        uriHelper.NavigateTo("funcionarios");
+        await http.PostAsJsonAsync("api/Funcionarios", funcionario);
+        uriHelper.NavigateTo("Funcionarios");
     }
 }

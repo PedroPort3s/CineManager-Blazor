@@ -1,0 +1,23 @@
+﻿@page "/sessoes/edit/{sessaoId:int}"
+@inject HttpClient http
+@inject NavigationManager uriHelper
+@inject IJSRuntime js
+
+<h3>Editar</h3>
+
+@code {
+    [Parameter] public int sessaoId { get; set; }
+    Sessao sessao = new Sessao();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        sessao = await http.GetFromJsonAsync<Sessao>($"api/sessao/{sessaoId}");
+    }
+
+    async Task EditSessao()
+    {
+        await http.PutAsJsonAsync("api/sessao", sessao);
+        await js.InvokeVoidAsync("alert", $"Atualizado com sucesso!");
+        uriHelper.NavigateTo("sessoes");
+    }
+}

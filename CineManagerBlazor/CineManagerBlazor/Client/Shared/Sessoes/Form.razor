@@ -1,0 +1,20 @@
+﻿<EditForm Model="@sessao" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <div class="form-group">
+        <label>Duração sessão :</label>
+        <div>
+            <InputNumber @bind-Value="@sessao.Duracao_Sessao" />
+            <ValidationMessage For="@(() => sessao.Duracao_Sessao)" />
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success">
+        @textoBotao
+    </button>
+</EditForm>
+
+
+@code {
+    [Parameter] public Sessao sessao { get; set; }
+    [Parameter] public string textoBotao { get; set; } = "Salvar";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+}
