@@ -1,0 +1,16 @@
+﻿@page "/sessoes/create" 
+@inject HttpClient http
+@inject NavigationManager uriHelper
+
+<h3>Criar</h3>
+
+<Form textoBotao="Criar sessão" sessao="@sessao" OnValidSubmit="@CreateSessao"></Form>
+
+@code {
+    Sessao sessao = new Sessao();
+    async Task CreateSessao()
+    {
+        await http.PostAsJsonAsync("api/sessao", sessao);
+        uriHelper.NavigateTo("sessoes");
+    }
+}

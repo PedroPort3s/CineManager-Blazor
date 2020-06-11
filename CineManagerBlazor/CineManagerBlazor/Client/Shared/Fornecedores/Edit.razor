@@ -1,0 +1,25 @@
+﻿@page "/fornecedores/edit/{fornecedorId:int}"
+@inject HttpClient http
+@inject NavigationManager uriHelper
+@inject IJSRuntime js
+
+<h3>Editar</h3>
+
+<Form ButtonText="Atualizar" forn="forn" OnValidSubmit="@EditFornecedor"></Form>
+
+@code {
+    [Parameter] public int fornecedorId { get; set; }
+    Fornecedor forn = new Fornecedor();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        forn = await http.GetFromJsonAsync<Fornecedor>($"api/Fornecedores/{fornecedorId}");
+    }
+
+    async Task EditFornecedor()
+    {
+        await http.PostAsJsonAsync("api/Fornecedores", forn);
+        await js.InvokeVoidAsync("alert", $"Atualizado com sucesso");
+        uriHelper.NavigateTo("Fornecedores");
+    }
+}
