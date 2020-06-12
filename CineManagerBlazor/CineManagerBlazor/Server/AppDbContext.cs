@@ -1,6 +1,7 @@
 ﻿using CineManagerBlazor.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace CineManagerBlazor.Server
 {
     public class AppDbContext : DbContext

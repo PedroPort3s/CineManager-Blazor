@@ -42,30 +42,30 @@ namespace CineManagerBlazor.Shared.Models {
         public List<FilmeGenero> Generos { get; set; } = new List<FilmeGenero>();
         public List<FilmeTipo> TiposFilme { get; set; } = new List<FilmeTipo>();
 
-        [NotMapped]
-        public string ListaGenerosJoin { get; set; }
+        //[NotMapped]
+        //public string ListaGenerosJoin { get; set; }
 
-        [NotMapped]
-        public string ListaTiposJoin { get; set; }
+        //[NotMapped]
+        //public string ListaTiposJoin { get; set; }
 
-        [NotMapped]
-        public string ListaGenerosJoinPreserve { get; set; }
+        //[NotMapped]
+        //public string ListaGenerosJoinPreserve { get; set; }
 
-        [NotMapped]
-        public string ListaTiposRemove { get; set; }
+        //[NotMapped]
+        //public string ListaTiposRemove { get; set; }
 
-        [NotMapped]
-        [Display(Name = "Tipo do filme")]
-        public TipoFilme TipoFilme { get; set; }
+        //[NotMapped]
+        //[Display(Name = "Tipo do filme")]
+        //public TipoFilme TipoFilme { get; set; }
 
-        [NotMapped]
-        [Display(Name = "Gênero")]
-        public Genero Genero { get; set; }
+        //[NotMapped]
+        //[Display(Name = "Gênero")]
+        //public Genero Genero { get; set; }
         
-        [NotMapped]
-        public int GeneroId { get; set; }
+        //[NotMapped]
+        //public int GeneroId { get; set; }
 
-        [NotMapped]
-        public int TipoFilmeId { get; set; }
+        //[NotMapped]
+        //public int TipoFilmeId { get; set; }
     }
 }

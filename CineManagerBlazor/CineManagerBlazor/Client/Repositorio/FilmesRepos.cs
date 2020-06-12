@@ -4,6 +4,7 @@ using CineManagerBlazor.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace CineManagerBlazor.Client.Repositorio
@@ -59,11 +60,12 @@ namespace CineManagerBlazor.Client.Repositorio
         }
 
         public async Task AtualizarFilme(Filme filme)
-        {
+        {            
             var response = await httpService.Put(url, filme);
+
             if (!response.Success)
             {
-                throw new ApplicationException(await response.GetBody());
+                throw new ApplicationException(await response.GetBody()) ;
             }
         }
 

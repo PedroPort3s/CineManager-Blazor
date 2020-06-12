@@ -12,7 +12,7 @@
 @code {
     [Parameter] public int filmeID { get; set; }
     Filme filme;
-        
+
     private List<Genero> GenerosNaoSelecionados = new List<Genero>();
     private List<Genero> GenerosSelecionados = new List<Genero>();
 
@@ -26,8 +26,16 @@
 
     async Task EditarFilme()
     {
-        await filmeRepo.AtualizarFilme(filme);
-        await js.InvokeVoidAsync("alert", $"Filme {filme.Titulo} atualizado com sucesso!");
-        uriHelper.NavigateTo("filmes");
+        try
+        {
+            await filmeRepo.AtualizarFilme(filme);
+            await js.InvokeVoidAsync("alert", $"Filme {filme.Titulo} atualizado com sucesso!");
+            uriHelper.NavigateTo("filmes");
+
+        }
+        catch (Exception ex)
+        {
+            await js.InvokeVoidAsync("alert", ex.Message);
+        }
     }
 }

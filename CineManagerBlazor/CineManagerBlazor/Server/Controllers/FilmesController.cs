@@ -61,15 +61,38 @@ namespace CineManagerBlazor.Server.Controllers
 
             if (filmeDB == null) return NotFound();
 
-            filmeDB = _mapper.Map(filme, filmeDB);
+            try
+            {
+                filmeDB = _mapper.Map(filme, filmeDB);
 
-            await _context.Database.ExecuteSqlInterpolatedAsync($"delete from filmestipo where filmeId = {filme.Id}; delete from filmegeneros where filmeId = {filme.Id}");
+                await _context.Database.ExecuteSqlInterpolatedAsync($"delete from filmestipo where filmeId = {filme.Id}; delete from filmegeneros where filmeId = {filme.Id};");
 
-            filmeDB.Generos = filme.Generos;
-            filmeDB.TiposFilme = filme.TiposFilme;
+                if (filmeDB.Generos != null)
+                {
+                    filmeDB.Generos.OrderBy(x => x.Genero.Nome);
+                }
 
-            await _context.SaveChangesAsync();            
-            return NoContent();
+                filmeDB.Generos = filme.Generos;
+
+                filmeDB.TiposFilme = filme.TiposFilme;
+
+
+                //_context.Entry(filme).CurrentValues.SetValues(filmeDB);
+                
+
+                if (await _context.SaveChangesAsync() == 1)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    throw new System.Exception("Não foi possivel atualizar o filme");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return Problem(ex.Message);
+            }
         }
 
         // POST: api/Filmes
@@ -105,7 +128,7 @@ namespace CineManagerBlazor.Server.Controllers
         {
             var filmeResult = await GetFilme(id);
 
-            if (filmeResult.Result is NotFoundResult) 
+            if (filmeResult.Result is NotFoundResult)
             {
                 return NotFound();
             }
