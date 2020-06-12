@@ -9,11 +9,11 @@
 @code{
     Sala sala = new Sala();
 
-    private List<TipoSala> TiposNaoSelecionados;
+    private List<TipoSala> tipoSalas;
 
     protected override async Task OnInitializedAsync()
     {
-        TiposNaoSelecionados = await http.GetFromJsonAsync<List<TipoSala>>("api/TipoSalas");
+        tipoSalas = await http.GetFromJsonAsync<List<TipoSala>>("api/TipoSalas");
     }
 
     async Task CreateSala()

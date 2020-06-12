@@ -115,22 +115,27 @@ namespace CineManagerBlazor.Server.Controllers
             {
                 TipoSala obj1 = new TipoSala();
                 obj1.Tipo = "2D";
-                _context.TipoSala.Add(obj1);   
-                TipoSala obj2 = new TipoSala();
-                obj1.Tipo = "3D";
-                _context.TipoSala.Add(obj1); 
-                TipoSala obj3 = new TipoSala();
-                obj1.Tipo = "4D";
-                _context.TipoSala.Add(obj1); 
-                TipoSala obj4 = new TipoSala();
-                obj1.Tipo = "4DX";
-                _context.TipoSala.Add(obj1); 
-                TipoSala obj5 = new TipoSala();
-                obj1.Tipo = "IMAX";
                 _context.TipoSala.Add(obj1);  
+                
+                TipoSala obj2 = new TipoSala();
+                obj2.Tipo = "3D";
+                _context.TipoSala.Add(obj2); 
+
+                TipoSala obj3 = new TipoSala();
+                obj3.Tipo = "4D";
+                _context.TipoSala.Add(obj3); 
+
+                TipoSala obj4 = new TipoSala();
+                obj4.Tipo = "4DX";
+                _context.TipoSala.Add(obj4); 
+
+                TipoSala obj5 = new TipoSala();
+                obj5.Tipo = "IMAX";
+                _context.TipoSala.Add(obj5); 
+                
                 TipoSala obj6 = new TipoSala();
-                obj1.Tipo = "XD";
-                _context.TipoSala.Add(obj1);
+                obj6.Tipo = "XD";
+                _context.TipoSala.Add(obj6);
             }
 
             _context.SaveChanges();
