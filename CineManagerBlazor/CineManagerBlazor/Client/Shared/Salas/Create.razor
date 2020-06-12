@@ -8,6 +8,14 @@
 
 @code{
     Sala sala = new Sala();
+
+    private List<TipoSala> TiposNaoSelecionados;
+
+    protected override async Task OnInitializedAsync()
+    {
+        TiposNaoSelecionados = await http.GetFromJsonAsync<List<TipoSala>>("api/TipoSalas");
+    }
+
     async Task CreateSala()
     {
         await http.PostAsJsonAsync("api/Salas", sala);
