@@ -1,37 +1,42 @@
 ﻿@inject HttpClient http
 @inject IJSRuntime js
 
-<EditForm Model="@sessao" OnValidSubmit="@OnValidSubmit">
-    <DataAnnotationsValidator></DataAnnotationsValidator>
-    <div class="form-group">
-        <label>Duração sessão :</label>
-        <div>
-            <InputNumber @bind-Value="@sessao.Duracao_Sessao" />
-            <ValidationMessage For="@(() => sessao.Duracao_Sessao)" />
+    <EditForm Model="@sessao" OnValidSubmit="@OnValidSubmit">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <div class="form-group">
+            <label>Duração sessão :</label>
+            <div>
+                <InputNumber @bind-Value="@sessao.Duracao_Sessao" />
+                <ValidationMessage For="@(() => sessao.Duracao_Sessao)" />
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label>Filme</label>
-        <div>
-            <RadzenDropDown AllowClear="true" TValue="int"
-                            Data="@(filmes.Select(f => new { FilmeId = f.Id, Titulo = f.Titulo}).Distinct())"
-                            TextProperty="Titulo" ValueProperty="FilmeId" Style="margin-bottom:20px" @bind-Value="sessao.FilmeId" />
+        <div class="form-group">
+            <label>Filme</label>
+            <div>
+                <RadzenDropDown AllowClear="true" TValue="int"
+                                Data="@(filmes.Select(f => new { FilmeId = f.Id, Titulo = f.Titulo}).Distinct())"
+                                TextProperty="Titulo" ValueProperty="FilmeId" Style="margin-bottom:20px" Change="@(args => ChangeFilme(args, sessao.FilmeId))"
+                                @bind-Value="sessao.FilmeId" />
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label>Tipo de Sala(Selecionar por Id -> Consultar a aba Sessão em caso de duvidas)</label>
-        <div>
-            <RadzenDropDown AllowClear="true" TValue="int"
-                            Data="@(salas.Select(s => new {SalaId = s.Id, NumPoltronas = s.NumPoltrona}).Distinct())"
-                            TextProperty="SalaId" ValueProperty="SalaId" Style="margin-bottom:20px" @bind-Value="sessao.SalaId" />
+        <div class="form-group">
+            <label>Tipo de Sala(Selecionar por Id >> Consultar a aba Sessão em caso de duvidas)</label>
+            <div>
+                <RadzenDropDown AllowClear="true" TValue="int"
+                                Data="@(salas.Select(s => new {SalaId = s.Id, NumPoltronas = s.NumPoltrona}).Distinct())"
+                                TextProperty="SalaId" ValueProperty="SalaId" Style="margin-bottom:20px" Change="@(args => ChangeSala(args, sessao.SalaId))"
+                                @bind-Value="sessao.SalaId" />
+            </div>
         </div>
-    </div>
 
 
-    <button type="submit" class="btn btn-success">
-        @textoBotao
-    </button>
-</EditForm>
+        @if (sessao.FilmeId > 0 && sessao.SalaId > 0)
+        {
+            <button type="submit" class="btn btn-success">
+                @textoBotao
+            </button>
+        }
+    </EditForm>
 
 
 @code {
@@ -45,5 +50,18 @@
     {
         filmes = await http.GetFromJsonAsync<List<Filme>>("api/Filmes");
         salas = await http.GetFromJsonAsync<List<Sala>>("api/Salas");
+    }
+
+    void ChangeFilme(object value, int pFilmeId)
+    {
+        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+
+        sessao.FilmeId = pFilmeId;
+    }
+    void ChangeSala(object value, int pSalaId)
+    {
+        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+
+        sessao.SalaId = pSalaId;
     }
 }
