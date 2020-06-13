@@ -61,7 +61,7 @@ namespace CineManagerBlazor.Shared.Models {
         //[NotMapped]
         //[Display(Name = "Gênero")]
         //public Genero Genero { get; set; }
-        
+
         //[NotMapped]
         //public int GeneroId { get; set; }
 

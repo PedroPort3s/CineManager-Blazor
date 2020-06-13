@@ -168,8 +168,9 @@ namespace CineManagerBlazor.Server.Controllers
                 TipoSala objtiposala7 = new TipoSala();
                 objtiposala7.Tipo = "XD";
                 _context.TipoSala.Add(objtiposala7);
+
+                _context.SaveChanges();
             }
-            _context.SaveChanges();
         }
     }
 }

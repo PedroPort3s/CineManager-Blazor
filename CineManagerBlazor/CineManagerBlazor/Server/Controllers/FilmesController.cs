@@ -57,30 +57,18 @@ namespace CineManagerBlazor.Server.Controllers
         [HttpPut]
         public async Task<ActionResult> PutFilme(Filme filme)
         {
-            var filmeDB = await _context.Filme.FirstOrDefaultAsync(x => x.Id == filme.Id);
-
-            if (filmeDB == null) return NotFound();
-
             try
-            {
-                filmeDB = _mapper.Map(filme, filmeDB);
+            {              
+                var listGenRemove = await _context.FilmeGeneros.Where(x => x.filmeId == filme.Id).ToListAsync();
 
-                await _context.Database.ExecuteSqlInterpolatedAsync($"delete from filmestipo where filmeId = {filme.Id}; delete from filmegeneros where filmeId = {filme.Id};");
+                var listTipoRemove = await _context.FilmesTipo.Where(x => x.filmeId == filme.Id).ToListAsync();
 
-                if (filmeDB.Generos != null)
-                {
-                    filmeDB.Generos.OrderBy(x => x.Genero.Nome);
-                }
+                _context.RemoveRange(listGenRemove);
+                _context.RemoveRange(listTipoRemove);
 
-                filmeDB.Generos = filme.Generos;
+                _context.Filme.Update(filme);
 
-                filmeDB.TiposFilme = filme.TiposFilme;
-
-
-                //_context.Entry(filme).CurrentValues.SetValues(filmeDB);
-                
-
-                if (await _context.SaveChangesAsync() == 1)
+                if (await _context.SaveChangesAsync() > 0)
                 {
                     return Ok();
                 }
@@ -135,13 +123,15 @@ namespace CineManagerBlazor.Server.Controllers
 
             DetalhesFilmeDTO filmeDetail = filmeResult.Value;
             List<int> idsGenerosSelecionados = filmeDetail.Generos.Select(x => x.Id).ToList();
+            List<int> idsTiposSelecionados = filmeDetail.TiposFilme.Select(x => x.Id).ToList();
             List<Genero> generosNaoSelecionados = await _context.Generos.Where(x => !idsGenerosSelecionados.Contains(x.Id)).ToListAsync();
+            List<TipoFilme> tipoFilmeSelecionados = await _context.TipoFilmes.Where(x => !idsTiposSelecionados.Contains(x.Id)).ToListAsync();
 
             AtualizarFilmeDTO atualizarFilme = new AtualizarFilmeDTO();
             atualizarFilme.Filme = filmeDetail.Filme;
             atualizarFilme.GenerosSelecionados = filmeDetail.Generos;
             atualizarFilme.GenerosNaoSelecionados = generosNaoSelecionados;
-            atualizarFilme.tiposDoFilme = filmeDetail.TiposFilme;
+            atualizarFilme.tiposDoFilme = tipoFilmeSelecionados;
 
             return atualizarFilme;
         }

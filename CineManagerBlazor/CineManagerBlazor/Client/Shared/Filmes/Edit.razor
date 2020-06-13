@@ -6,7 +6,7 @@
 <h3>Edit</h3>
 @if (filme != null)
 {
-    <Form textoBotao="Atualizar" filme="filme" OnValidSubmit="EditarFilme" GenerosNaoSelecionados="GenerosNaoSelecionados" GenerosSelecionados="GenerosSelecionados" />
+    <Form textoBotao="Atualizar" filme="filme" OnValidSubmit="EditarFilme" GenerosNaoSelecionados="GenerosNaoSelecionados" TipoFilmes="tipoFilmeSel" GenerosSelecionados="GenerosSelecionados" />
 }
 
 @code {
@@ -15,6 +15,7 @@
 
     private List<Genero> GenerosNaoSelecionados = new List<Genero>();
     private List<Genero> GenerosSelecionados = new List<Genero>();
+    private List<TipoFilme> tipoFilmeSel = new List<TipoFilme>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -22,6 +23,7 @@
         filme = edit.Filme;
         GenerosNaoSelecionados = edit.GenerosNaoSelecionados;
         GenerosSelecionados = edit.GenerosSelecionados;
+        tipoFilmeSel = edit.tiposDoFilme;
     }
 
     async Task EditarFilme()

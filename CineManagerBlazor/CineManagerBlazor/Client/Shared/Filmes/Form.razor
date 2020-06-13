@@ -31,9 +31,18 @@
     <div class="form-group">
         <label>Generos: </label>
         <div>
-            <MultipleSelect Selecionados="Selecionados" NaoSelecionados="NaoSelecionados" ></MultipleSelect>
+            <MultipleSelect Selecionados="Selecionados" NaoSelecionados="NaoSelecionados"></MultipleSelect>
         </div>
     </div>
+    @if (TipoFilmes != null && TipoFilmes.Count > 0)
+    {
+        <div class="form-group">
+            <RadzenDropDown AllowClear="true" TValue="string" 
+                    Data="@(TipoFilmesSel.Select(t => new { TipoFilmeId = t.Chave, NomeTipo = t.Valor}).Distinct())" 
+                    TextProperty="NomeTipo" ValueProperty="TipoFilmeId" Style="margin-bottom: 20px" @bind-Value="@tipoFilmeId" />
+        </div>
+    }
+
 
     <button type="submit" class="btn btn-success">@textoBotao</button>
 </EditForm>
@@ -44,19 +53,26 @@
     [Parameter] public EventCallback OnValidSubmit { get; set; }
     [Parameter] public List<Genero> GenerosNaoSelecionados { get; set; } = new List<Genero>();
     [Parameter] public List<Genero> GenerosSelecionados { get; set; } = new List<Genero>();
+    [Parameter] public List<TipoFilme> TipoFilmes { get; set; } = new List<TipoFilme>();
+
+    private string tipoFilmeId { get; set; }
 
     private List<MultipleSelectModel> Selecionados = new List<MultipleSelectModel>();
     private List<MultipleSelectModel> NaoSelecionados = new List<MultipleSelectModel>();
+    private List<MultipleSelectModel> TipoFilmesSel = new List<MultipleSelectModel>();
 
     protected override void OnInitialized()
     {
         Selecionados = GenerosSelecionados.Select(x => new MultipleSelectModel(x.Id.ToString(), x.Nome)).ToList();
         NaoSelecionados = GenerosNaoSelecionados.Select(x => new MultipleSelectModel(x.Id.ToString(), x.Nome)).ToList();
+
+        TipoFilmesSel = TipoFilmes.Select(x => new MultipleSelectModel(x.Id.ToString(), x.NomeTipoFilme)).ToList();
     }
 
     private async Task OnDataAnnotationsValidated()
     {
         filme.Generos = Selecionados.Select(x => new FilmeGenero { generoId = int.Parse(x.Chave) }).ToList();
+        filme.TiposFilme = TipoFilmesSel.Select(x => new FilmeTipo { tipoFilmeId = tipoFilmeId }).ToList();
 
         await OnValidSubmit.InvokeAsync(null);
     }
