@@ -89,8 +89,16 @@ namespace CineManagerBlazor.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<int>> PostFilme(Filme filme)
         {
-            _context.Filme.Add(filme);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Filme.Add(filme);
+                await _context.SaveChangesAsync();
+            }
+            catch (System.Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+            
 
             return filme.Id;
         }

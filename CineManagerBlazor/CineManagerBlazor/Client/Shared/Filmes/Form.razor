@@ -37,9 +37,10 @@
     @if (TipoFilmes != null && TipoFilmes.Count > 0)
     {
         <div class="form-group">
-            <RadzenDropDown AllowClear="true" TValue="string" 
-                    Data="@(TipoFilmesSel.Select(t => new { TipoFilmeId = t.Chave, NomeTipo = t.Valor}).Distinct())" 
-                    TextProperty="NomeTipo" ValueProperty="TipoFilmeId" Style="margin-bottom: 20px" @bind-Value="@tipoFilmeId" />
+            <RadzenDropDown AllowClear="true" TValue="int"
+                    Data="@(TipoFilmes.Select(x=> new { Id = x.Id, NomeTipoFilme = x.NomeTipoFilme } ).Distinct())" 
+                    TextProperty="NomeTipoFilme" Change="@(args => Change(args,ft.tipoFilmeId))" @bind-Value="@ft.tipoFilmeId" 
+                    ValueProperty="Id" Style="margin-bottom: 20px"/>
         </div>
     }
 
@@ -55,24 +56,31 @@
     [Parameter] public List<Genero> GenerosSelecionados { get; set; } = new List<Genero>();
     [Parameter] public List<TipoFilme> TipoFilmes { get; set; } = new List<TipoFilme>();
 
-    private string tipoFilmeId { get; set; }
-
     private List<MultipleSelectModel> Selecionados = new List<MultipleSelectModel>();
     private List<MultipleSelectModel> NaoSelecionados = new List<MultipleSelectModel>();
-    private List<MultipleSelectModel> TipoFilmesSel = new List<MultipleSelectModel>();
+    //private List<MultipleSelectModel> TipoFilmesSel = new List<MultipleSelectModel>();
+
+    private FilmeTipo ft = new FilmeTipo();
 
     protected override void OnInitialized()
     {
         Selecionados = GenerosSelecionados.Select(x => new MultipleSelectModel(x.Id.ToString(), x.Nome)).ToList();
         NaoSelecionados = GenerosNaoSelecionados.Select(x => new MultipleSelectModel(x.Id.ToString(), x.Nome)).ToList();
 
-        TipoFilmesSel = TipoFilmes.Select(x => new MultipleSelectModel(x.Id.ToString(), x.NomeTipoFilme)).ToList();
+        //TipoFilmesSel = TipoFilmes.Select(x => new MultipleSelectModel(x.Id.ToString(), x.NomeTipoFilme)).ToList();
     }
+
+    protected void Change(object value, int id)
+    {
+        ft.tipoFilmeId = id;        
+    }
+
 
     private async Task OnDataAnnotationsValidated()
     {
         filme.Generos = Selecionados.Select(x => new FilmeGenero { generoId = int.Parse(x.Chave) }).ToList();
-        //filme.TiposFilme = TipoFilmesSel.Select(x => new FilmeTipo { tipoFilmeId = tipoFilmeId }).ToList();
+        //filme.TiposFilme = TipoFilmesSel.Select(x => new FilmeTipo { tipoFilmeId = Convert.ToInt32(x.Chave) }).ToList();
+        filme.TiposFilme.Add(ft);
 
         await OnValidSubmit.InvokeAsync(null);
     }
