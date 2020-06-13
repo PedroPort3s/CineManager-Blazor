@@ -16,7 +16,8 @@
             @if (tiposSala.Count > 0)
             {
                 <RadzenDropDown AllowClear="true" TValue="int"
-                                              Data="@(tiposSala.Select(t => new { TipoSalaId = t.Id, Tipo = t.Tipo}).Distinct())" TextProperty="Tipo" ValueProperty="TipoSalaId" Style="margin-bottom: 20px"  @bind-Value="@sala.TipoSalaId"/>
+                                Data="@(tiposSala.Select(t => new { TipoSalaId = t.Id, Tipo = t.Tipo}).Distinct())" TextProperty="Tipo" ValueProperty="TipoSalaId" Style="margin-bottom: 20px" @bind-Value="@sala.TipoSalaId" />
+
             }
             else
             {
