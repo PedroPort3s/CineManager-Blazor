@@ -6,6 +6,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="Shared\Fornecedores\Create.razor" />
+    <None Include="Shared\Fornecedores\Edit.razor" />
+    <None Include="Shared\Fornecedores\Form.razor" />
+    <None Include="Shared\Fornecedores\Fornecedores.razor" />
+    <None Include="Shared\Funcionarios\Create.razor" />
+    <None Include="Shared\Funcionarios\Edit.razor" />
+    <None Include="Shared\Funcionarios\Form.razor" />
+    <None Include="Shared\Funcionarios\Funcionarios.razor" />
+    <None Include="Shared\Salas\Create.razor" />
+    <None Include="Shared\Salas\Edit.razor" />
+    <None Include="Shared\Salas\Form.razor" />
+    <None Include="Shared\Salas\Salas.razor" />
+    <None Include="Shared\Sessoes\Create.razor" />
+    <None Include="Shared\Sessoes\Edit.razor" />
+    <None Include="Shared\Sessoes\Form.razor" />
+    <None Include="Shared\Sessoes\Sessoes.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="3.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Build" Version="3.2.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="3.2.0" PrivateAssets="all" />
