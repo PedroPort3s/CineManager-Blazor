@@ -72,7 +72,7 @@
     private async Task OnDataAnnotationsValidated()
     {
         filme.Generos = Selecionados.Select(x => new FilmeGenero { generoId = int.Parse(x.Chave) }).ToList();
-        filme.TiposFilme = TipoFilmesSel.Select(x => new FilmeTipo { tipoFilmeId = tipoFilmeId }).ToList();
+        //filme.TiposFilme = TipoFilmesSel.Select(x => new FilmeTipo { tipoFilmeId = tipoFilmeId }).ToList();
 
         await OnValidSubmit.InvokeAsync(null);
     }
