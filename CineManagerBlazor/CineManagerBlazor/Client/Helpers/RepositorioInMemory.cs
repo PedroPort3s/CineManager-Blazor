@@ -27,5 +27,18 @@ namespace CineManagerBlazor.Client.Helpers
 
             return response.Response;
         }
+
+        public async Task<Fornecedor[]> GetFornecedores()
+        {
+            var response = await http.Get<Fornecedor[]>("api/fornecedores");
+
+            if (!response.Success)
+            {
+                throw new ApplicationException(await response.GetBody());
+            }
+
+            return response.Response;
+        }
+
     }
 }

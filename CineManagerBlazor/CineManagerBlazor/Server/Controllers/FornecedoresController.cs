@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CineManagerBlazor.Server;
 using CineManagerBlazor.Shared.Models;
+using CineManagerBlazor.Shared.DTOs;
 
 namespace CineManagerBlazor.Server.Controllers
 {
@@ -23,16 +24,17 @@ namespace CineManagerBlazor.Server.Controllers
 
         // GET: api/Fornecedores
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Fornecedor>>> GetFornecedor()
+        public async Task<ActionResult<Fornecedor[]>> GetFornecedor()
         {
-            return await _context.Fornecedor.ToListAsync();
+            return await _context.Fornecedor.ToArrayAsync();
         }
 
         // GET: api/Fornecedores/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Fornecedor>> GetFornecedor(int id)
         {
-            var fornecedor = await _context.Fornecedor.FindAsync(id);
+            var fornecedor = await _context.Fornecedor.Include(x => x.ListaEndereco).Include(x => x.ListaTelefone).
+                Include(x => x.ListaEmail).FirstOrDefaultAsync(x => x.Id == id);
 
             if (fornecedor == null)
             {
@@ -46,14 +48,30 @@ namespace CineManagerBlazor.Server.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutFornecedor(int id, Fornecedor fornecedor)
+        public async Task<IActionResult> PutFornecedor(int id, AtualizarFornecedorDTO fornDTO)
         {
-            if (id != fornecedor.Id)
+            if (id != fornDTO.Fornecedor.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(fornecedor).State = EntityState.Modified;
+            foreach(string idString in fornDTO.EndRemover.Split(',')) {
+                int idInt = Convert.ToInt32(idString);
+                if(fornDTO.Fornecedor.ListaEndereco.FirstOrDefault(x => x.Id == idInt) == null) {
+                    Endereco end = _context.Endereco.FirstOrDefault(x => x.Id == idInt);
+                    _context.Entry(end).State = EntityState.Deleted;
+                }
+            }
+
+            foreach(var end in fornDTO.Fornecedor.ListaEndereco) {
+                if(end.Id == 0) {
+                    _context.Entry(end).State = EntityState.Added;
+                } else {
+                    _context.Entry(end).State = EntityState.Modified;
+                }
+            }
+
+            _context.Entry(fornDTO.Fornecedor).State = EntityState.Modified;
 
             try
             {
@@ -90,14 +108,19 @@ namespace CineManagerBlazor.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Fornecedor>> DeleteFornecedor(int id)
         {
-            var fornecedor = await _context.Fornecedor.FindAsync(id);
+            var fornecedor = await _context.Fornecedor.Include(x => x.ListaEndereco)
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (fornecedor == null)
             {
                 return NotFound();
             }
 
-            _context.Fornecedor.Remove(fornecedor);
-            await _context.SaveChangesAsync();
+            foreach(var end in fornecedor.ListaEndereco) {
+                _context.Entry(end).State = EntityState.Deleted;
+            }
+
+            _context.Entry(fornecedor).State = EntityState.Deleted;
+            _context.SaveChanges();
 
             return fornecedor;
         }

@@ -4,22 +4,48 @@
 @inject IJSRuntime js
 
 <h3>Editar</h3>
-
-<Form ButtonText="Atualizar" forn="forn" OnValidSubmit="@EditFornecedor"></Form>
+@if (forn != null) {
+    <Form textoBotao="Atualizar" forn="forn" OnValidSubmit="@EditFornecedor"></Form>
+}
 
 @code {
     [Parameter] public int fornecedorId { get; set; }
+    public List<Endereco> ListEndRemove { get; set; } = new List<Endereco>();
+    public List<Telefone> ListTelRemove { get; set; } = new List<Telefone>();
+    public List<Email> ListEmailRemove { get; set; } = new List<Email>();
     Fornecedor forn = new Fornecedor();
+    Fornecedor forn2 = new Fornecedor();
 
-    protected async override Task OnParametersSetAsync()
-    {
-        forn = await http.GetFromJsonAsync<Fornecedor>($"api/Fornecedores/{fornecedorId}");
+    protected override async Task OnInitializedAsync() {
+        forn = await http.GetFromJsonAsync<Fornecedor>($"api/fornecedores/{fornecedorId}");
+        forn2 = await http.GetFromJsonAsync<Fornecedor>($"api/fornecedores/{fornecedorId}");
+        if (ListEmailRemove.Count != 0) {
+            ListEndRemove = forn.ListaEndereco;
+        }
+        ListTelRemove = forn.ListaTelefone;
+        ListEmailRemove = forn.ListaEmail;
     }
 
-    async Task EditFornecedor()
-    {
-        await http.PostAsJsonAsync("api/Fornecedores", forn);
-        await js.InvokeVoidAsync("alert", $"Atualizado com sucesso");
-        uriHelper.NavigateTo("Fornecedores");
+    async Task EditFornecedor() {
+        try {
+
+            List<int> idEndRemove = new List<int>();
+            foreach(Endereco end in forn2.ListaEndereco) {
+                idEndRemove.Add(end.Id);
+            }
+            string EndRemove = String.Join(',', idEndRemove);
+            AtualizarFornecedorDTO attForn = new AtualizarFornecedorDTO() {
+                Fornecedor = forn,
+                ListEndRemover = ListEndRemove,
+                ListTelRemover = ListTelRemove,
+                ListEmailRemover = ListEmailRemove,
+                EndRemover = EndRemove
+            };
+            await http.PutAsJsonAsync($"api/fornecedores/{forn.Id}", attForn);
+            await js.InvokeVoidAsync("alert", $"Fornecedor {forn.NomeDaEmpresa} atualizado com sucesso");
+            uriHelper.NavigateTo("Fornecedores");
+        } catch (Exception ex) {
+            await js.InvokeVoidAsync("alert", "DEU RUIM");
+        }
     }
 }

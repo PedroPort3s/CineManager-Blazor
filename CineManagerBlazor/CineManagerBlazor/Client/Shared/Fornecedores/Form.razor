@@ -4,7 +4,7 @@
         <label>Nome da Empresa</label>
         <div>
             <InputText @bind-Value="@forn.NomeDaEmpresa"></InputText>
-            <ValidationMessage For="@(() => forn.NomeDaEmpresa)"/>
+            <ValidationMessage For="@(() => forn.NomeDaEmpresa)" />
         </div>
     </div>
     <div class="form-group">
@@ -16,6 +16,92 @@
             </div>
         </div>
     </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="form-group">
+                <input class="btn btn-secondary"
+                       @onclick="(() => forn.ListaEndereco.Add(new Endereco()))"
+                       value="Adicionar um endereço" readonly />
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                @for (int i = 0; i < forn.ListaEndereco.Count; i++) {
+                    int index = i;
+                    Endereco end;
+                    if (forn.ListaEndereco[i] != null) {
+                        end = forn.ListaEndereco[i];
+                        <div class="container">
+                            <div class="row">
+                                <div class="col">
+                                    <p>Tipo de logradouro</p>
+                                    <InputText @bind-Value="end.TipoLogradouro" />
+                                    <ValidationMessage For="@(() => end.TipoLogradouro)" />
+                                </div>
+                                <div class="col">
+                                    <p>Nome logradouro</p>
+                                    <InputText @bind-Value="end.NomeLogradouro" />
+                                    <ValidationMessage For="@(() => end.NomeLogradouro)" />
+                                </div>
+                                <div class="col">
+                                    <p>N°</p>
+                                    <InputNumber @bind-Value="end.Numero" />
+                                    <ValidationMessage For="@(() => end.Numero)" />
+                                </div>
+                                <div class="col">
+                                    <p>Complemento</p>
+                                    <InputText @bind-Value="end.Complemento" />
+                                    <ValidationMessage For="@(() => end.Complemento)" />
+                                </div>
+                                <div class="col">
+                                    <p>Tipo</p>
+                                    <InputText @bind-Value="end.TipoEndereco" />
+                                    <ValidationMessage For="@(() => end.TipoEndereco)" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <p>Cep</p>
+                                    <InputText @bind-Value="end.Cep" />
+                                    <ValidationMessage For="@(() => end.Cep)" />
+                                </div>
+                                <div class="col">
+                                    <p>Bairro</p>
+                                    <InputText @bind-Value="end.Bairro" />
+                                    <ValidationMessage For="@(() => end.Bairro)" />
+                                </div>
+                                <div class="col">
+                                    <p>Cidade</p>
+                                    <InputText @bind-Value="end.Cidade" />
+                                    <ValidationMessage For="@(() => end.Cidade)" />
+                                </div>
+                                <div class="col">
+                                    <p>Estado</p>
+                                    <InputText @bind-Value="end.Estado" />
+                                    <ValidationMessage For="@(() => end.Estado)" />
+                                </div>
+                                <div class="col">
+                                    <p>País</p>
+                                    <InputText @bind-Value="end.Pais" />
+                                    <ValidationMessage For="@(() => end.Pais)" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <button type="button" class="btn btn-danger"
+                                            @onclick="@(() => forn.ListaEndereco.RemoveAt(index))">
+                                        Remover endereço
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
     <button type="submit" class="btn btn-success">
         @textoBotao
     </button>
@@ -25,6 +111,7 @@
 
 @code {
     [Parameter] public Fornecedor forn { get; set; }
+    [Parameter] public Fornecedor forn2 { get; set; }
     [Parameter] public string textoBotao { get; set; } = "Salvar";
     [Parameter] public EventCallback OnValidSubmit { get; set; }
 }

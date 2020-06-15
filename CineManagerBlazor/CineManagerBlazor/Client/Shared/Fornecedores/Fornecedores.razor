@@ -1,5 +1,6 @@
 ﻿@page "/fornecedores"
-@inject HttpClient client
+@inject IRepository repo
+@inject IFornecedorRepos FornRepos
 @inject IJSRuntime js
 
 <h3>Fornecedores</h3>
@@ -10,30 +11,28 @@
 </div>
 <br />
 
-@if (fornecedores == null)
-{
+@if (fornecedores == null) {
     <text>Carregando...</text>
-}
-else if (fornecedores.Length == 0)
-{
+} else if (fornecedores.Length == 0) {
     <text>Nenhum registro encontrado</text>
-}
-else
-{
+} else {
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>Nome</th>
                 <th>Responsavel</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (Fornecedor forn in fornecedores)
-            {
+            @foreach (Fornecedor forn in fornecedores) {
                 <tr>
                     <td>@forn.NomeDaEmpresa</td>
                     <td>@forn.NomeResponsavel</td>
+                    @foreach (Endereco end in forn.ListaEndereco) {
+                        <td>@end.NomeLogradouro</td>
 
+                    }
                     <td>
                         <a class="btn btn-success" href="fornecedores/edit/@forn.Id">Editar</a>
                         <button class="btn btn-danger" @onclick="@(() => Delete(forn.Id))">Excluir</button>
@@ -47,17 +46,16 @@ else
 
 
 @code {
+
     Fornecedor[] fornecedores { get; set; }
-    protected override async Task OnInitializedAsync()
-    {
-        fornecedores = await client.GetFromJsonAsync<Fornecedor[]>("api/Fornecedores");
+    protected override async Task OnInitializedAsync() {
+        fornecedores = await repo.GetFornecedores();
     }
-    async Task Delete(int fornecedorId)
-    {
+
+    async Task Delete(int fornecedorId) {
         var forn = fornecedores.First(x => x.Id == fornecedorId);
-        if (await js.InvokeAsync<bool>("confirm", $"Deseja excluir o fornecedor com o id: {forn.Id} ?")) ;
-        {
-            await client.DeleteAsync($"api/fornecedores/{fornecedorId}");
+        if (await js.InvokeAsync<bool>("confirm", $"Deseja excluir o fornecedor com o id: {forn.Id} ?")) {
+            await FornRepos.DeletarFornecedor(fornecedorId);
             await OnInitializedAsync();
         }
     }
