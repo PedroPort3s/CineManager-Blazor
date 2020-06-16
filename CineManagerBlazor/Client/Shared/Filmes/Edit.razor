@@ -1,0 +1,46 @@
+﻿@page "/filme/edit/{filmeId:int}"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+@inject IFilmeRepos filmeRepo
+@inject NavigationManager uriHelper
+@inject IJSRuntime js
+
+<h3>Edit</h3>
+@if (filme != null)
+{
+    <Form textoBotao="Atualizar" filme="filme" OnValidSubmit="EditarFilme" GenerosNaoSelecionados="GenerosNaoSelecionados" TipoFilmes="tipoFilmeSel" GenerosSelecionados="GenerosSelecionados" />
+}
+
+@code {
+    [Parameter] public int filmeID { get; set; }
+    Filme filme;
+
+    private List<Genero> GenerosNaoSelecionados = new List<Genero>();
+    private List<Genero> GenerosSelecionados = new List<Genero>();
+    private List<TipoFilme> tipoFilmeSel = new List<TipoFilme>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var edit = await filmeRepo.GetFilmeAtualizar(filmeID);
+        filme = edit.Filme;
+        GenerosNaoSelecionados = edit.GenerosNaoSelecionados;
+        GenerosSelecionados = edit.GenerosSelecionados;
+        tipoFilmeSel = edit.tiposDoFilme;
+    }
+
+    async Task EditarFilme()
+    {
+        try
+        {
+            await filmeRepo.AtualizarFilme(filme);
+            await js.InvokeVoidAsync("alert", $"Filme {filme.Titulo} atualizado com sucesso!");
+            uriHelper.NavigateTo("filmes");
+
+        }
+        catch (Exception ex)
+        {
+            await js.InvokeVoidAsync("alert", ex.Message);
+        }
+    }
+}

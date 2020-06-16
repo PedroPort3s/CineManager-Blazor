@@ -1,0 +1,27 @@
+﻿@page "/salas/create"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+@inject HttpClient http
+@inject NavigationManager uriHelper
+
+<h3>Criar</h3>
+
+<Form textoBotao="Criar Sala" sala="@sala" OnValidSubmit="@CreateSala"></Form>
+
+@code{
+    Sala sala = new Sala();
+
+    private List<TipoSala> tipoSalas;
+
+    protected override async Task OnInitializedAsync()
+    {
+        tipoSalas = await http.GetFromJsonAsync<List<TipoSala>>("api/TipoSalas");
+    }
+
+    async Task CreateSala()
+    {
+        await http.PostAsJsonAsync("api/Salas", sala);
+        uriHelper.NavigateTo("Salas");
+    }
+}

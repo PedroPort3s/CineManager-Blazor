@@ -1,0 +1,35 @@
+﻿@page "/sessoes/edit/{sessaoId:int}"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+@inject HttpClient http
+@inject NavigationManager uriHelper
+@inject IJSRuntime js
+
+<h3>Editar</h3>
+
+<Form textoBotao="Atualizar" sessao="sessao" OnValidSubmit="@EditSessao"></Form>
+
+@code {
+    [Parameter] public int sessaoId { get; set; }
+    Sessao sessao = new Sessao();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        sessao = await http.GetFromJsonAsync<Sessao>($"api/sessao/{sessaoId}");
+    }
+
+    //async Task EditSessao()
+    //{
+    //    await http.PutAsJsonAsync("api/sessao", sessao);
+    //    await js.InvokeVoidAsync("alert", $"Atualizado com sucesso!");
+    //    uriHelper.NavigateTo("sessoes");
+    //}
+
+    async Task EditSessao()
+    {
+        await http.PutAsJsonAsync<Sessao>("/api/Sessao/" + Convert.ToInt32(sessaoId), sessao);
+        await js.InvokeVoidAsync("alert", $"Atualizado com sucesso!");
+        uriHelper.NavigateTo("Sessoes");
+    }
+}

@@ -1,0 +1,58 @@
+﻿@inject HttpClient http
+@inject IJSRuntime js
+
+<EditForm Model="@sala" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>Nº de poltronas</label>
+        <div>
+            <InputNumber @bind-Value="@sala.NumPoltrona"></InputNumber>
+            <ValidationMessage For="@(() => sala.NumPoltrona)"></ValidationMessage>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Tipo de Sala</label>
+        <div>
+            @if (tiposSala.Count > 0)
+            {
+                <RadzenDropDown AllowClear="true" TValue="int"
+                                Data="@(tiposSala.Select(t => new { TipoSalaId = t.Id, Tipo = t.Tipo}).Distinct())" TextProperty="Tipo" ValueProperty="TipoSalaId" Style="margin-bottom: 20px" Change="@(args => Change(args, sala.TipoSalaId))" @bind-Value="@sala.TipoSalaId" />
+
+            }
+            else
+            {
+                <div>
+                    <text>Nenhuma sala encontrada</text>
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (sala.TipoSalaId > 0)
+    {
+        <button type="submit" class="btn btn-success">
+            @textoBotao
+        </button>
+    }
+</EditForm>
+
+
+@code {
+    [Parameter] public Sala sala { get; set; }
+    [Parameter] public string textoBotao { get; set; } = "Salvar";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public List<TipoSala> tiposSala { get; set; } = new List<TipoSala>();
+
+    protected async override Task OnInitializedAsync()
+    {
+        tiposSala = await http.GetFromJsonAsync<List<TipoSala>>("api/TipoSalas");
+    }
+
+
+    void Change(object value, int pSalaId)
+    {
+        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+
+        sala.TipoSalaId = pSalaId;
+    }
+}

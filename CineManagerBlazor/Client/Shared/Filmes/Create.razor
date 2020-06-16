@@ -1,0 +1,41 @@
+﻿@page "/filme/create"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+@inject IFilmeRepos filmesRepo
+@inject HttpClient http
+@inject NavigationManager uriHelper
+
+<h3>Create</h3>
+
+@if (GenerosNaoSelecionados != null && TipoFilmes != null)
+{
+    <Form textoBotao="Cadastrar" filme="@filme" OnValidSubmit="@CriarFilme" TipoFilmes="@TipoFilmes" GenerosNaoSelecionados="GenerosNaoSelecionados"></Form>
+}
+
+@code {
+    Filme filme = new Filme();
+
+    private List<Genero> GenerosNaoSelecionados;
+    private List<TipoFilme> TipoFilmes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        GenerosNaoSelecionados = await http.GetFromJsonAsync<List<Genero>>("api/Generos");
+        TipoFilmes = await http.GetFromJsonAsync<List<TipoFilme>>("api/TipoFilmes");
+    }
+
+    async Task CriarFilme()
+    {
+        try
+        {
+            await filmesRepo.CriarFilme(filme);
+            uriHelper.NavigateTo("Filmes");
+        }
+        catch (Exception)
+        {
+
+
+        }
+    }
+}

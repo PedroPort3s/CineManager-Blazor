@@ -1,0 +1,87 @@
+﻿<EditForm Model="@filme" OnValidSubmit="@OnDataAnnotationsValidated">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>Titulo: </label>
+        <div>
+            <InputText @bind-Value="filme.Titulo" />
+            <ValidationMessage For="@(()=>filme.Titulo)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Data de lançamento: </label>
+        <div>
+            <InputDate @bind-Value="filme.Lancamento" />
+            <ValidationMessage For="@(()=>filme.Lancamento)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Em cartaz até: </label>
+        <div>
+            <InputDate @bind-Value="filme.EmCartazAte" />
+            <ValidationMessage For="@(()=>filme.EmCartazAte)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Duração: </label>
+        <div>
+            <InputNumber @bind-Value="filme.Duracao" />
+            <ValidationMessage For="@(()=>filme.Duracao)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Generos: </label>
+        <div>
+            <MultipleSelect Selecionados="Selecionados" NaoSelecionados="NaoSelecionados"></MultipleSelect>
+        </div>
+    </div>
+    @if (TipoFilmes != null && TipoFilmes.Count > 0)
+    {
+        <div class="form-group">
+            <RadzenDropDown AllowClear="true" TValue="int"
+                    Data="@(TipoFilmes.Select(x=> new { Id = x.Id, NomeTipoFilme = x.NomeTipoFilme } ).Distinct())" 
+                    TextProperty="NomeTipoFilme" Change="@(args => Change(args,ft.tipoFilmeId))" @bind-Value="@ft.tipoFilmeId" 
+                    ValueProperty="Id" Style="margin-bottom: 20px"/>
+        </div>
+    }
+
+
+    <button type="submit" class="btn btn-success">@textoBotao</button>
+</EditForm>
+
+@code {
+    [Parameter] public Filme filme { get; set; }
+    [Parameter] public string textoBotao { get; set; } = "Gravar";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public List<Genero> GenerosNaoSelecionados { get; set; } = new List<Genero>();
+    [Parameter] public List<Genero> GenerosSelecionados { get; set; } = new List<Genero>();
+    [Parameter] public List<TipoFilme> TipoFilmes { get; set; } = new List<TipoFilme>();
+
+    private List<MultipleSelectModel> Selecionados = new List<MultipleSelectModel>();
+    private List<MultipleSelectModel> NaoSelecionados = new List<MultipleSelectModel>();
+    //private List<MultipleSelectModel> TipoFilmesSel = new List<MultipleSelectModel>();
+
+    private FilmeTipo ft = new FilmeTipo();
+
+    protected override void OnInitialized()
+    {
+        Selecionados = GenerosSelecionados.Select(x => new MultipleSelectModel(x.Id.ToString(), x.Nome)).ToList();
+        NaoSelecionados = GenerosNaoSelecionados.Select(x => new MultipleSelectModel(x.Id.ToString(), x.Nome)).ToList();
+
+        //TipoFilmesSel = TipoFilmes.Select(x => new MultipleSelectModel(x.Id.ToString(), x.NomeTipoFilme)).ToList();
+    }
+
+    protected void Change(object value, int id)
+    {
+        ft.tipoFilmeId = id;        
+    }
+
+
+    private async Task OnDataAnnotationsValidated()
+    {
+        filme.Generos = Selecionados.Select(x => new FilmeGenero { generoId = int.Parse(x.Chave) }).ToList();
+        //filme.TiposFilme = TipoFilmesSel.Select(x => new FilmeTipo { tipoFilmeId = Convert.ToInt32(x.Chave) }).ToList();
+        filme.TiposFilme.Add(ft);
+
+        await OnValidSubmit.InvokeAsync(null);
+    }
+}

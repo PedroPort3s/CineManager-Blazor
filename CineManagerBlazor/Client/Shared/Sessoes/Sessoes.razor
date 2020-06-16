@@ -1,0 +1,64 @@
+﻿@page "/sessoes"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+@inject HttpClient client
+@inject IJSRuntime js
+
+<h3>Sessões</h3>
+<h6>Criar sessões</h6>
+<div class="form-group">
+    <a class="btn btn-success" href="sessoes/create"><i class="oi oi-plus"></i>Criar</a>
+</div>
+<br />
+
+@if (sessoes == null)
+{
+    <text>Carregando...</text>
+}
+else if (sessoes.Length == 0)
+{
+    <text>Nenhuma sessao encontrada</text>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Duração Sessão</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Sessao sessao in sessoes)
+            {
+                <tr>
+                    <td>@sessao.Duracao_Sessao</td>
+                    <td>
+                        <a class="btn btn-success" href="sessoes/edit/@sessao.Id">Editar</a>
+                        <button class="btn btn-danger" @onclick="@(() => Delete(sessao.Id))">Excluir</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code{
+    Sessao[] sessoes { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        sessoes = await client.GetFromJsonAsync<Sessao[]>("api/sessao");
+    }
+
+    async Task Delete(int sessaoId)
+    {
+        var ses = sessoes.First(x => x.Id == sessaoId);
+        if (await js.InvokeAsync<bool>("confirm", $"Quer realmente excluir a sessão {ses.Id} ?"))
+        {
+            await client.DeleteAsync($"api/sessao/{sessaoId}");
+            await OnInitializedAsync();
+        }
+    }
+}

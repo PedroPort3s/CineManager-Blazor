@@ -1,0 +1,19 @@
+﻿@page "/fornecedores/create"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+@inject HttpClient http
+@inject NavigationManager uriHelper
+
+<h3>Criar</h3>
+
+<Form textoBotao="Cadastrar Fornecedor" forn="@forn" OnValidSubmit="@CreateFornecedor"></Form>
+
+@code {
+    Fornecedor forn = new Fornecedor();
+    async Task CreateFornecedor()
+    {
+        await http.PostAsJsonAsync("api/Fornecedores", forn);
+        uriHelper.NavigateTo("Fornecedores");
+    }
+}
