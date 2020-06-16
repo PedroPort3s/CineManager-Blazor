@@ -102,16 +102,107 @@
         </div>
     </div>
 
+    <div class="form-group">
+        <div class="row">
+            <div class="form-group">
+                <input class="btn btn-secondary"
+                       @onclick="(() => forn.ListaTelefone.Add(new Telefone()))"
+                       value="Adicionar um telefone" readonly />
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                @for (int i = 0; i < forn.ListaTelefone.Count; i++) {
+                    int index = i;
+                    Telefone tel;
+                    if (forn.ListaTelefone[i] != null) {
+                        tel = forn.ListaTelefone[i];
+                        <div class="container">
+                            <div class="row">
+                                <div class="col">
+                                    <p>Tipo de logradouro</p>
+                                    <InputText @bind-Value="tel.DDI" />
+                                    <ValidationMessage For="@(() => tel.DDI)" />
+                                </div>
+                                <div class="col">
+                                    <p>Nome logradouro</p>
+                                    <InputNumber @bind-Value="tel.DDD" />
+                                    <ValidationMessage For="@(() => tel.DDD)" />
+                                </div>
+                                <div class="col">
+                                    <p>N°</p>
+                                    <InputNumber @bind-Value="tel.Numero" />
+                                    <ValidationMessage For="@(() => tel.Numero)" />
+                                </div>
+                                <div class="col">
+                                    <p>Complemento</p>
+                                    <InputText @bind-Value="tel.Tipo" />
+                                    <ValidationMessage For="@(() => tel.Tipo)" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <button type="button" class="btn btn-danger"
+                                            @onclick="@(() => forn.ListaTelefone.RemoveAt(index))">
+                                        Remover telefone
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="form-group">
+                <input class="btn btn-secondary"
+                       @onclick="(() => forn.ListaEmail.Add(new Email()))"
+                       value="Adicionar um email" readonly />
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                @for (int i = 0; i < forn.ListaEmail.Count; i++) {
+                    int index = i;
+                    Email email;
+                    if (forn.ListaEmail[i] != null) {
+                        email = forn.ListaEmail[i];
+                        <div class="container">
+                            <div class="row">
+                                <div class="col">
+                                    <p>Tipo de logradouro</p>
+                                    <InputText @bind-Value="email.EnderecoEmail" />
+                                    <ValidationMessage For="@(() => email.EnderecoEmail)" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <button type="button" class="btn btn-danger"
+                                            @onclick="@(() => forn.ListaEmail.RemoveAt(index))">
+                                        Remover email
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
     <button type="submit" class="btn btn-success">
         @textoBotao
     </button>
+
 </EditForm>
 
 
 
 @code {
     [Parameter] public Fornecedor forn { get; set; }
-    [Parameter] public Fornecedor forn2 { get; set; }
     [Parameter] public string textoBotao { get; set; } = "Salvar";
     [Parameter] public EventCallback OnValidSubmit { get; set; }
 }

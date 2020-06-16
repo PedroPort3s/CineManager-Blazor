@@ -10,7 +10,7 @@
     Fornecedor forn = new Fornecedor();
     async Task CreateFornecedor()
     {
-        await http.PostAsJsonAsync("api/Fornecedores", forn);
+        await http.PostAsJsonAsync("api/fornecedores", forn);
         uriHelper.NavigateTo("Fornecedores");
     }
 }

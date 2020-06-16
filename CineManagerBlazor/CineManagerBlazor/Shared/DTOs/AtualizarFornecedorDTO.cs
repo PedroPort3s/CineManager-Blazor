@@ -8,6 +8,8 @@ namespace CineManagerBlazor.Shared.DTOs {
         public Fornecedor Fornecedor { get; set; }
         public Fornecedor Fornecedor2 { get; set; }
         public string EndRemover { get; set; }
+        public string TelRemover { get; set; }
+        public string EmailRemover { get; set; }
         public List<Endereco> ListEndRemover { get; set; }
         public List<Telefone> ListTelRemover { get; set; }
         public List<Email> ListEmailRemover { get; set; }

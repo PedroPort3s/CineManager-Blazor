@@ -9,35 +9,29 @@ using CineManagerBlazor.Server;
 using CineManagerBlazor.Shared.Models;
 using CineManagerBlazor.Shared.DTOs;
 
-namespace CineManagerBlazor.Server.Controllers
-{
+namespace CineManagerBlazor.Server.Controllers {
     [Route("api/[controller]")]
     [ApiController]
-    public class FornecedoresController : ControllerBase
-    {
+    public class FornecedoresController : ControllerBase {
         private readonly AppDbContext _context;
 
-        public FornecedoresController(AppDbContext context)
-        {
+        public FornecedoresController(AppDbContext context) {
             _context = context;
         }
 
         // GET: api/Fornecedores
         [HttpGet]
-        public async Task<ActionResult<Fornecedor[]>> GetFornecedor()
-        {
+        public async Task<ActionResult<Fornecedor[]>> GetFornecedor() {
             return await _context.Fornecedor.ToArrayAsync();
         }
 
         // GET: api/Fornecedores/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Fornecedor>> GetFornecedor(int id)
-        {
+        public async Task<ActionResult<Fornecedor>> GetFornecedor(int id) {
             var fornecedor = await _context.Fornecedor.Include(x => x.ListaEndereco).Include(x => x.ListaTelefone).
                 Include(x => x.ListaEmail).FirstOrDefaultAsync(x => x.Id == id);
 
-            if (fornecedor == null)
-            {
+            if (fornecedor == null) {
                 return NotFound();
             }
 
@@ -48,43 +42,45 @@ namespace CineManagerBlazor.Server.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutFornecedor(int id, AtualizarFornecedorDTO fornDTO)
-        {
-            if (id != fornDTO.Fornecedor.Id)
-            {
+        public async Task<IActionResult> PutFornecedor(int id, AtualizarFornecedorDTO fornDTO) {
+            if (id != fornDTO.Fornecedor.Id) {
                 return BadRequest();
             }
 
-            foreach(string idString in fornDTO.EndRemover.Split(',')) {
+            foreach (string idString in fornDTO.EndRemover.Split(',')) {
                 int idInt = Convert.ToInt32(idString);
-                if(fornDTO.Fornecedor.ListaEndereco.FirstOrDefault(x => x.Id == idInt) == null) {
-                    Endereco end = _context.Endereco.FirstOrDefault(x => x.Id == idInt);
-                    _context.Entry(end).State = EntityState.Deleted;
-                }
+                Endereco end = _context.Endereco.FirstOrDefault(x => x.Id == idInt);
+                _context.Entry(end).State = EntityState.Deleted;
+            }
+            foreach (string idString in fornDTO.TelRemover.Split(',')) {
+                int idInt = Convert.ToInt32(idString);
+                Telefone tel = _context.Telefone.FirstOrDefault(x => x.Id == idInt);
+                _context.Entry(tel).State = EntityState.Deleted;
+            }
+            foreach (string idString in fornDTO.EmailRemover.Split(',')) {
+                int idInt = Convert.ToInt32(idString);
+                Email email = _context.Email.FirstOrDefault(x => x.Id == idInt);
+                _context.Entry(email).State = EntityState.Deleted;
             }
 
-            foreach(var end in fornDTO.Fornecedor.ListaEndereco) {
-                if(end.Id == 0) {
-                    _context.Entry(end).State = EntityState.Added;
-                } else {
-                    _context.Entry(end).State = EntityState.Modified;
-                }
+            foreach (var end in fornDTO.Fornecedor.ListaEndereco) {
+                _context.Entry(end).State = EntityState.Added;
+            }
+            foreach (var tel in fornDTO.Fornecedor.ListaTelefone) {
+                _context.Entry(tel).State = EntityState.Added;
+            }
+            foreach (var email in fornDTO.Fornecedor.ListaEmail) {
+                _context.Entry(email).State = EntityState.Added;
             }
 
             _context.Entry(fornDTO.Fornecedor).State = EntityState.Modified;
 
-            try
-            {
+            try {
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FornecedorExists(id))
-                {
+            } catch (DbUpdateConcurrencyException) {
+                if (!FornecedorExists(id)) {
                     return NotFound();
-                }
-                else
-                {
+                } else {
                     throw;
                 }
             }
@@ -96,8 +92,7 @@ namespace CineManagerBlazor.Server.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Fornecedor>> PostFornecedor(Fornecedor fornecedor)
-        {
+        public async Task<ActionResult<Fornecedor>> PostFornecedor(Fornecedor fornecedor) {
             _context.Fornecedor.Add(fornecedor);
             await _context.SaveChangesAsync();
 
@@ -106,18 +101,24 @@ namespace CineManagerBlazor.Server.Controllers
 
         // DELETE: api/Fornecedores/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Fornecedor>> DeleteFornecedor(int id)
-        {
-            var fornecedor = await _context.Fornecedor.Include(x => x.ListaEndereco)
+        public async Task<ActionResult<Fornecedor>> DeleteFornecedor(int id) {
+            var fornecedor = await _context.Fornecedor.Include(x => x.ListaEndereco).
+                Include(x => x.ListaTelefone).Include(x => x.ListaEmail)
                 .FirstOrDefaultAsync(x => x.Id == id);
-            if (fornecedor == null)
-            {
+            if (fornecedor == null) {
                 return NotFound();
             }
 
-            foreach(var end in fornecedor.ListaEndereco) {
+            foreach (var end in fornecedor.ListaEndereco) {
                 _context.Entry(end).State = EntityState.Deleted;
             }
+            foreach (var tel in fornecedor.ListaTelefone) {
+                _context.Entry(tel).State = EntityState.Deleted;
+            }
+            foreach (var email in fornecedor.ListaEmail) {
+                _context.Entry(email).State = EntityState.Deleted;
+            }
+
 
             _context.Entry(fornecedor).State = EntityState.Deleted;
             _context.SaveChanges();
@@ -125,8 +126,7 @@ namespace CineManagerBlazor.Server.Controllers
             return fornecedor;
         }
 
-        private bool FornecedorExists(int id)
-        {
+        private bool FornecedorExists(int id) {
             return _context.Fornecedor.Any(e => e.Id == id);
         }
     }
