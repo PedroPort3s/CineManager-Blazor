@@ -11,7 +11,8 @@
     Funcionario funcionario = new Funcionario();
     async Task CreateFuncionario()
     {
-        await http.PostAsJsonAsync("api/Funcionarios", funcionario);
+        //await funcRepo.CriarFuncionario(funcionario);
+        await http.PostAsJsonAsync("api/funcionarios", funcionario);
         uriHelper.NavigateTo("Funcionarios");
     }
 }

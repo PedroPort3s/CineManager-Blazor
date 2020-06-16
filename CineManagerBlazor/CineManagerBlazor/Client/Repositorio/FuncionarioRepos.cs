@@ -7,20 +7,21 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace CineManagerBlazor.Client.Repositorio {
-    public class FornecedorRepos : IFornecedorRepos {
+    public class FuncionarioRepos : IFuncionarioRepos {
 
         private readonly IHttpService httpService;
-        private string url = "api/fornecedores";
+        private string url = "api/funcionarios";
 
-        public FornecedorRepos(IHttpService httpService) {
+        public FuncionarioRepos(IHttpService httpService) {
             this.httpService = httpService;
         }
 
-        public async Task<Fornecedor> GetFornecedor(int id) {
-            return await httpService.GetHelper<Fornecedor>($"{url}/{id}");
+        public async Task<Funcionario> GetFuncionario(int id) {
+            return await httpService.GetHelper<Funcionario>($"{url}/{id}");
         }
-        public async Task<int> CriarFornecedor(Fornecedor forn) {
-            var response = await httpService.Post<Fornecedor, int>(url, forn);
+
+        public async Task<int> CriarFuncionario(Funcionario func) {
+            var response = await httpService.Post<Funcionario, int>(url, func);
             if (!response.Success) {
                 throw new ApplicationException(await response.GetBody());
             }
@@ -28,21 +29,21 @@ namespace CineManagerBlazor.Client.Repositorio {
             return response.Response;
         }
 
-        public async Task AtualizarFornecedor(AtualizarFornecedorDTO fornDTO) {
-            var response = await httpService.Put($"{url}/{fornDTO.Fornecedor.Id}", fornDTO);
+        public async Task AtualizarFuncionario(AtualizarFuncionarioDTO func) {
+            var response = await httpService.Put($"{url}/{func.Funcionario.Id}", func);
 
             if (!response.Success) {
                 throw new ApplicationException(await response.GetBody());
             }
         }
 
-
-        public async Task DeletarFornecedor(int id) {
+        public async  Task DeletarFuncionario(int id) {
             var response = await httpService.Delete($"{url}/{id}");
 
             if (!response.Success) {
                 throw new ApplicationException(await response.GetBody());
             }
         }
+
     }
 }

@@ -32,6 +32,8 @@ namespace CineManagerBlazor.Client
             services.AddScoped<IHttpService, HttpService>();
             services.AddScoped<IFilmeRepos, FilmesRepos>();
             services.AddScoped<IFornecedorRepos, FornecedorRepos>();
+            services.AddScoped<IFuncionarioRepos, FuncionarioRepos>();
+
         }
     }
 }

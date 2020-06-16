@@ -37,7 +37,6 @@ else
                 <tr>
                     <td>@func.NomeCompleto</td>
                     <td>@func.Setor</td>
-                    <td>@func.Cargo</td>
                     <td>@func.Cpf</td>
                     <td>@func.Rg</td>
                     <td>@func.Salario</td>
@@ -68,7 +67,7 @@ else
 
         if (await js.InvokeAsync<bool>("confirm", $"Tem certeza que deseja excluir o funcionario {func.NomeCompleto} ?")) ;
         {
-            await client.DeleteAsync($"api/funcionario/{funcionarioId}");
+            await client.DeleteAsync($"api/funcionarios/{funcionarioId}");
             await OnInitializedAsync();
         }
     }

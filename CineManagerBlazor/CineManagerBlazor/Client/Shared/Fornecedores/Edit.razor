@@ -14,11 +14,11 @@
     public List<Telefone> ListTelRemove { get; set; } = new List<Telefone>();
     public List<Email> ListEmailRemove { get; set; } = new List<Email>();
     Fornecedor forn = new Fornecedor();
-    Fornecedor forn2 = new Fornecedor();
+    Fornecedor fornBase = new Fornecedor();
 
     protected override async Task OnInitializedAsync() {
         forn = await http.GetFromJsonAsync<Fornecedor>($"api/fornecedores/{fornecedorId}");
-        forn2 = await http.GetFromJsonAsync<Fornecedor>($"api/fornecedores/{fornecedorId}");
+        fornBase = await http.GetFromJsonAsync<Fornecedor>($"api/fornecedores/{fornecedorId}");
         if (ListEmailRemove.Count != 0) {
             ListEndRemove = forn.ListaEndereco;
         }
@@ -32,13 +32,14 @@
             List<int> idEndRemove = new List<int>();
             List<int> idTelRemove = new List<int>();
             List<int> idEmailRemove = new List<int>();
-            foreach(Endereco end in forn2.ListaEndereco) {
+
+            foreach(Endereco end in fornBase.ListaEndereco) {
                 idEndRemove.Add(end.Id);
             }
-            foreach(Telefone tel in forn2.ListaTelefone) {
+            foreach(Telefone tel in fornBase.ListaTelefone) {
                 idTelRemove.Add(tel.Id);
             }
-            foreach(Email email in forn2.ListaEmail) {
+            foreach(Email email in fornBase.ListaEmail) {
                 idEmailRemove.Add(email.Id);
             }
 
@@ -47,13 +48,11 @@
             string EmailRemove = String.Join(',', idEmailRemove);
             AtualizarFornecedorDTO attForn = new AtualizarFornecedorDTO() {
                 Fornecedor = forn,
-                ListEndRemover = ListEndRemove,
-                ListTelRemover = ListTelRemove,
-                ListEmailRemover = ListEmailRemove,
                 EndRemover = EndRemove,
                 TelRemover = TelRemove,
                 EmailRemover = EmailRemove
             };
+
             await http.PutAsJsonAsync($"api/fornecedores/{forn.Id}", attForn);
             await js.InvokeVoidAsync("alert", $"Fornecedor {forn.NomeDaEmpresa} atualizado com sucesso");
             uriHelper.NavigateTo("Fornecedores");

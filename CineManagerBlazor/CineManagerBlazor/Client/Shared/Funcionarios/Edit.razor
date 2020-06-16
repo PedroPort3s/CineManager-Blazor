@@ -5,18 +5,41 @@
 
 <h3>Editar</h3>
 
-<Form ButtonText="Atualizar" func="func" OnValidSubmit="@EditFuncionario"/>
+<Form textoBotao="Atualizar" funcionario="func" OnValidSubmit="@EditFuncionario"/>
 
 @code {
     [Parameter] public int funcionarioId { get; set; }
-    Funcionario func= new Funcionario();
+    Funcionario func = new Funcionario();
+    Funcionario funcBase = new Funcionario();
+
     protected async override Task OnParametersSetAsync()
     {
         func = await http.GetFromJsonAsync<Funcionario>($"api/funcionarios/{funcionarioId}");
+        funcBase = await http.GetFromJsonAsync<Funcionario>($"api/funcionarios/{funcionarioId}");
     }
     async Task EditFuncionario()
     {
-        await http.PutAsJsonAsync("api/funcionarios", func);
+
+        List<int> idEndRemove = new List<int>();
+        List<int> idTelRemove = new List<int>();
+
+        foreach (Endereco end in funcBase.ListaEndereco) {
+            idEndRemove.Add(end.Id);
+        }
+        foreach (Telefone tel in funcBase.ListaTelefone) {
+            idTelRemove.Add(tel.Id);
+        }
+
+        string EndRemove = String.Join(',', idEndRemove);
+        string TelRemove = String.Join(',', idTelRemove);
+
+        AtualizarFuncionarioDTO attFunc = new AtualizarFuncionarioDTO() {
+            Funcionario = func,
+            EndRemover = EndRemove,
+            TelRemover = TelRemove
+        };
+
+        await http.PutAsJsonAsync($"api/funcionarios/{func.Id}", attFunc);
         await js.InvokeVoidAsync("alert", $"ATUALIZADO COM SUCESSO!");
         uriHelper.NavigateTo("funcionarios");
     }
