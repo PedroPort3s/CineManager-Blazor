@@ -29,6 +29,8 @@ else
                 <th>Salário</th>
                 <th>Cargo</th>
                 <th>Turno</th>
+                <th>Endereços</th>
+                <th>Telefones</th>
             </tr>
         </thead>
         <tbody>
@@ -42,6 +44,28 @@ else
                     <td>@func.Salario</td>
                     <td>@func.Cargo</td>
                     <td>@func.Turno</td>
+                    <td>
+                        <table>
+                            @foreach (Endereco end in func.ListaEndereco) {
+                                <tr>
+                                    <td>
+                                        @end.NomeLogradouro @end.Numero - @end.Cep
+                                    </td>
+                                </tr>
+                             }
+                        </table>
+                    </td>
+                    <td>
+                        <table>
+                            @foreach (Telefone tel in func.ListaTelefone) {
+                                <tr>
+                                    <td>
+                                        +@tel.DDI (@tel.DDD) @tel.Numero
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
                     <td>
                         <a class="btn btn-success" href="funcionarios/edit/@func.Id">Editar</a>
                         <button class="btn btn-danger" @onclick="@(() => Delete(func.Id))">Excluir</button>

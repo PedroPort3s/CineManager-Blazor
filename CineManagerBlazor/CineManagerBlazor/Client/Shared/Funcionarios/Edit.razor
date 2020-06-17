@@ -19,28 +19,17 @@
     }
     async Task EditFuncionario()
     {
-
-        List<int> idEndRemove = new List<int>();
-        List<int> idTelRemove = new List<int>();
-
-        foreach (Endereco end in funcBase.ListaEndereco) {
-            idEndRemove.Add(end.Id);
-        }
-        foreach (Telefone tel in funcBase.ListaTelefone) {
-            idTelRemove.Add(tel.Id);
-        }
-
-        string EndRemove = String.Join(',', idEndRemove);
-        string TelRemove = String.Join(',', idTelRemove);
-
         AtualizarFuncionarioDTO attFunc = new AtualizarFuncionarioDTO() {
             Funcionario = func,
-            EndRemover = EndRemove,
-            TelRemover = TelRemove
+            FuncionarioBase = funcBase
         };
 
-        await http.PutAsJsonAsync($"api/funcionarios/{func.Id}", attFunc);
-        await js.InvokeVoidAsync("alert", $"ATUALIZADO COM SUCESSO!");
-        uriHelper.NavigateTo("funcionarios");
+        try {
+            await http.PutAsJsonAsync($"api/funcionarios/{func.Id}", attFunc);
+            await js.InvokeVoidAsync("alert", $"Funcionario {func.NomeCompleto} atualizado com sucesso");
+            uriHelper.NavigateTo("funcionarios");
+        } catch (Exception ex) {
+            await js.InvokeVoidAsync("alert", "Deu ruim ++++++++++++++++" + ex.Message);
+        }
     }
 }

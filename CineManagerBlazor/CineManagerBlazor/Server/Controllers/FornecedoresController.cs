@@ -22,7 +22,10 @@ namespace CineManagerBlazor.Server.Controllers {
         // GET: api/Fornecedores
         [HttpGet]
         public async Task<ActionResult<Fornecedor[]>> GetFornecedor() {
-            return await _context.Fornecedor.ToArrayAsync();
+            return await _context.Fornecedor.Include(x => x.ListaEndereco).
+                Include(x => x.ListaTelefone).
+                Include(x => x.ListaEmail).
+                ToArrayAsync();
         }
 
         // GET: api/Fornecedores/5
@@ -47,31 +50,13 @@ namespace CineManagerBlazor.Server.Controllers {
                 return BadRequest();
             }
 
-            foreach (string idString in fornDTO.EndRemover.Split(',')) {
-                int idInt = Convert.ToInt32(idString);
-                Endereco end = _context.Endereco.FirstOrDefault(x => x.Id == idInt);
-                _context.Entry(end).State = EntityState.Deleted;
-            }
-            foreach (string idString in fornDTO.TelRemover.Split(',')) {
-                int idInt = Convert.ToInt32(idString);
-                Telefone tel = _context.Telefone.FirstOrDefault(x => x.Id == idInt);
-                _context.Entry(tel).State = EntityState.Deleted;
-            }
-            foreach (string idString in fornDTO.EmailRemover.Split(',')) {
-                int idInt = Convert.ToInt32(idString);
-                Email email = _context.Email.FirstOrDefault(x => x.Id == idInt);
-                _context.Entry(email).State = EntityState.Deleted;
-            }
+            _context.RemoveRange(fornDTO.FornecedorBase.ListaEndereco);
+            _context.RemoveRange(fornDTO.FornecedorBase.ListaTelefone);
+            _context.RemoveRange(fornDTO.FornecedorBase.ListaEmail);
 
-            foreach (var end in fornDTO.Fornecedor.ListaEndereco) {
-                _context.Entry(end).State = EntityState.Added;
-            }
-            foreach (var tel in fornDTO.Fornecedor.ListaTelefone) {
-                _context.Entry(tel).State = EntityState.Added;
-            }
-            foreach (var email in fornDTO.Fornecedor.ListaEmail) {
-                _context.Entry(email).State = EntityState.Added;
-            }
+            _context.AddRange(fornDTO.Fornecedor.ListaEndereco);
+            _context.AddRange(fornDTO.Fornecedor.ListaTelefone);
+            _context.AddRange(fornDTO.Fornecedor.ListaEmail);
 
             _context.Entry(fornDTO.Fornecedor).State = EntityState.Modified;
 
@@ -109,16 +94,9 @@ namespace CineManagerBlazor.Server.Controllers {
                 return NotFound();
             }
 
-            foreach (var end in fornecedor.ListaEndereco) {
-                _context.Entry(end).State = EntityState.Deleted;
-            }
-            foreach (var tel in fornecedor.ListaTelefone) {
-                _context.Entry(tel).State = EntityState.Deleted;
-            }
-            foreach (var email in fornecedor.ListaEmail) {
-                _context.Entry(email).State = EntityState.Deleted;
-            }
-
+            _context.RemoveRange(fornecedor.ListaEndereco);
+            _context.RemoveRange(fornecedor.ListaTelefone);
+            _context.RemoveRange(fornecedor.ListaEmail);
 
             _context.Entry(fornecedor).State = EntityState.Deleted;
             _context.SaveChanges();

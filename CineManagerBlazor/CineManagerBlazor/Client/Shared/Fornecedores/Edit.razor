@@ -28,36 +28,16 @@
 
     async Task EditFornecedor() {
         try {
-
-            List<int> idEndRemove = new List<int>();
-            List<int> idTelRemove = new List<int>();
-            List<int> idEmailRemove = new List<int>();
-
-            foreach(Endereco end in fornBase.ListaEndereco) {
-                idEndRemove.Add(end.Id);
-            }
-            foreach(Telefone tel in fornBase.ListaTelefone) {
-                idTelRemove.Add(tel.Id);
-            }
-            foreach(Email email in fornBase.ListaEmail) {
-                idEmailRemove.Add(email.Id);
-            }
-
-            string EndRemove = String.Join(',', idEndRemove);
-            string TelRemove = String.Join(',', idTelRemove);
-            string EmailRemove = String.Join(',', idEmailRemove);
             AtualizarFornecedorDTO attForn = new AtualizarFornecedorDTO() {
                 Fornecedor = forn,
-                EndRemover = EndRemove,
-                TelRemover = TelRemove,
-                EmailRemover = EmailRemove
+                FornecedorBase = fornBase,
             };
 
             await http.PutAsJsonAsync($"api/fornecedores/{forn.Id}", attForn);
             await js.InvokeVoidAsync("alert", $"Fornecedor {forn.NomeDaEmpresa} atualizado com sucesso");
             uriHelper.NavigateTo("Fornecedores");
         } catch (Exception ex) {
-            await js.InvokeVoidAsync("alert", "DEU RUIM");
+            await js.InvokeVoidAsync("alert", "DEU RUIM ++++++++++++++++" + ex.Message);
         }
     }
 }

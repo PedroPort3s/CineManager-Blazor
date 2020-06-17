@@ -21,23 +21,53 @@
             <tr>
                 <th>Nome</th>
                 <th>Responsavel</th>
-                <th></th>
+                <th>Endereços</th>
+                <th>Telefones</th>
             </tr>
         </thead>
         <tbody>
             @foreach (Fornecedor forn in fornecedores) {
-                <tr>
-                    <td>@forn.NomeDaEmpresa</td>
-                    <td>@forn.NomeResponsavel</td>
-                    @foreach (Endereco end in forn.ListaEndereco) {
-                        <td>@end.NomeLogradouro</td>
-
-                    }
-                    <td>
-                        <a class="btn btn-success" href="fornecedores/edit/@forn.Id">Editar</a>
-                        <button class="btn btn-danger" @onclick="@(() => Delete(forn.Id))">Excluir</button>
-                    </td>
-                </tr>
+            <tr>
+                <td>@forn.NomeDaEmpresa</td>
+                <td>@forn.NomeResponsavel</td>
+                <td>
+                    <table>
+                        @foreach (Endereco end in forn.ListaEndereco) {
+                            <tr>
+                                <td>
+                                    @end.NomeLogradouro @end.Numero - @end.Cep
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </td>
+                <td>
+                    <table>
+                        @foreach (Telefone tel in forn.ListaTelefone) {
+                            <tr>
+                                <td>
+                                    +@tel.DDI (@tel.DDD) @tel.Numero
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </td>
+                <td>
+                    <table>
+                        @foreach (Email email in forn.ListaEmail) {
+                            <tr>
+                                <td>
+                                    @email.EnderecoEmail
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </td>
+                <td>
+                    <a class="btn btn-success" href="fornecedores/edit/@forn.Id">Editar</a>
+                    <button class="btn btn-danger" @onclick="@(() => Delete(forn.Id))">Excluir</button>
+                </td>
+            </tr>
             }
         </tbody>
     </table>

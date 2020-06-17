@@ -57,23 +57,11 @@ namespace CineManagerBlazor.Server.Controllers
                 return BadRequest();
             }
 
-            foreach (string idString in funcDTO.EndRemover.Split(',')) {
-                int idInt = Convert.ToInt32(idString);
-                Endereco end = _context.Endereco.FirstOrDefault(x => x.Id == idInt);
-                _context.Entry(end).State = EntityState.Deleted;
-            }
-            foreach (string idString in funcDTO.TelRemover.Split(',')) {
-                int idInt = Convert.ToInt32(idString);
-                Telefone tel = _context.Telefone.FirstOrDefault(x => x.Id == idInt);
-                _context.Entry(tel).State = EntityState.Deleted;
-            }
+            _context.RemoveRange(funcDTO.FuncionarioBase.ListaEndereco);
+            _context.RemoveRange(funcDTO.FuncionarioBase.ListaTelefone);
 
-            foreach (var end in funcDTO.Funcionario.ListaEndereco) {
-                _context.Entry(end).State = EntityState.Added;
-            }
-            foreach (var tel in funcDTO.Funcionario.ListaTelefone) {
-                _context.Entry(tel).State = EntityState.Added;
-            }
+            _context.AddRange(funcDTO.Funcionario.ListaEndereco);
+            _context.AddRange(funcDTO.Funcionario.ListaTelefone);
 
             _context.Entry(funcDTO.Funcionario).State = EntityState.Modified;
 
@@ -119,13 +107,8 @@ namespace CineManagerBlazor.Server.Controllers
                 return NotFound();
             }
 
-            foreach (var end in funcionario.ListaEndereco) {
-                _context.Entry(end).State = EntityState.Deleted;
-            }
-            foreach (var tel in funcionario.ListaTelefone) {
-                _context.Entry(tel).State = EntityState.Deleted;
-            }
-
+            _context.RemoveRange(funcionario.ListaEndereco);
+            _context.RemoveRange(funcionario.ListaTelefone);
 
             _context.Entry(funcionario).State = EntityState.Deleted;
             await _context.SaveChangesAsync();
