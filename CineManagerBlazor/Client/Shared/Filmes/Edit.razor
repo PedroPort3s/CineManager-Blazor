@@ -5,6 +5,7 @@
 @inject IFilmeRepos filmeRepo
 @inject NavigationManager uriHelper
 @inject IJSRuntime js
+@inject HttpClient http
 
 <h3>Edit</h3>
 @if (filme != null)
@@ -26,7 +27,8 @@
         filme = edit.Filme;
         GenerosNaoSelecionados = edit.GenerosNaoSelecionados;
         GenerosSelecionados = edit.GenerosSelecionados;
-        tipoFilmeSel = edit.tiposDoFilme;
+        //tipoFilmeSel = edit.tiposDoFilme;
+        tipoFilmeSel = await http.GetFromJsonAsync<List<TipoFilme>>("api/TipoFilmes");
     }
 
     async Task EditarFilme()

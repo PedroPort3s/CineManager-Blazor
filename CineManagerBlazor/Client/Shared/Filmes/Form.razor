@@ -37,15 +37,23 @@
     @if (TipoFilmes != null && TipoFilmes.Count > 0)
     {
         <div class="form-group">
-            <RadzenDropDown AllowClear="true" TValue="int"
-                    Data="@(TipoFilmes.Select(x=> new { Id = x.Id, NomeTipoFilme = x.NomeTipoFilme } ).Distinct())" 
-                    TextProperty="NomeTipoFilme" Change="@(args => Change(args,ft.tipoFilmeId))" @bind-Value="@ft.tipoFilmeId" 
-                    ValueProperty="Id" Style="margin-bottom: 20px"/>
+            @*<RadzenDropDown AllowClear="true" TValue="int"
+                Data="@(TipoFilmes.Select(x=> new { Id = x.Id, NomeTipoFilme = x.NomeTipoFilme } ).Distinct())"
+                TextProperty="NomeTipoFilme" Change="@(args => Change(args,ft.tipoFilmeId))" @bind-Value="@ft.tipoFilmeId"
+                ValueProperty="Id" Style="margin-bottom: 20px"/>*@
+
+            <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                            @bind-Value="multipleValues" Multiple="true" Placeholder="Selecione um ou vários..." Data="@TipoFilmes"
+                            TextProperty="NomeTipoFilme" ValueProperty="Id" Style="margin-bottom: 20px; width:400px;" />
+
         </div>
     }
 
+    @if (multipleValues != null && multipleValues.Count() > 0)
+    {
+        <button type="submit" class="btn btn-success">@textoBotao</button>
+    }
 
-    <button type="submit" class="btn btn-success">@textoBotao</button>
 </EditForm>
 
 @code {
@@ -56,31 +64,31 @@
     [Parameter] public List<Genero> GenerosSelecionados { get; set; } = new List<Genero>();
     [Parameter] public List<TipoFilme> TipoFilmes { get; set; } = new List<TipoFilme>();
 
+    public List<TipoFilme> TipoFilmesSelecionados { get; set; } = new List<TipoFilme>();
+
     private List<MultipleSelectModel> Selecionados = new List<MultipleSelectModel>();
     private List<MultipleSelectModel> NaoSelecionados = new List<MultipleSelectModel>();
-    //private List<MultipleSelectModel> TipoFilmesSel = new List<MultipleSelectModel>();
 
-    private FilmeTipo ft = new FilmeTipo();
+    IEnumerable<int> multipleValues;
 
     protected override void OnInitialized()
     {
         Selecionados = GenerosSelecionados.Select(x => new MultipleSelectModel(x.Id.ToString(), x.Nome)).ToList();
         NaoSelecionados = GenerosNaoSelecionados.Select(x => new MultipleSelectModel(x.Id.ToString(), x.Nome)).ToList();
 
-        //TipoFilmesSel = TipoFilmes.Select(x => new MultipleSelectModel(x.Id.ToString(), x.NomeTipoFilme)).ToList();
+        if (filme != null)
+        {
+            if (filme.TiposFilme != null)
+            {
+                multipleValues = filme.TiposFilme.Select(x => x.tipoFilmeId);
+            }
+        }
     }
-
-    protected void Change(object value, int id)
-    {
-        ft.tipoFilmeId = id;        
-    }
-
 
     private async Task OnDataAnnotationsValidated()
     {
         filme.Generos = Selecionados.Select(x => new FilmeGenero { generoId = int.Parse(x.Chave) }).ToList();
-        //filme.TiposFilme = TipoFilmesSel.Select(x => new FilmeTipo { tipoFilmeId = Convert.ToInt32(x.Chave) }).ToList();
-        filme.TiposFilme.Add(ft);
+        filme.TiposFilme = multipleValues.Select(x => new FilmeTipo { tipoFilmeId = x }).ToList();
 
         await OnValidSubmit.InvokeAsync(null);
     }
