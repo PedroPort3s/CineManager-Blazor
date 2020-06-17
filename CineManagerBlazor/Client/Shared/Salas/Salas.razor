@@ -26,8 +26,7 @@ else
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Nº de Poltronas</th>
-                @*<th>Tipo de Sala</th>*@
+                <th scope="col">Nº de Poltronas</th>
             </tr>
         </thead>
         <tbody>
@@ -35,7 +34,6 @@ else
             {
                 <tr>
                     <td>@sala.NumPoltrona</td>
-                    @*<td></td>*@
                     <td>
                         <a class="btn btn-success" href="salas/edit/@sala.Id">Editar</a>
                         <button class="btn btn-danger" @onclick="@(() => Delete(sala.Id))">Excluir</button>

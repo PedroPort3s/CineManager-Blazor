@@ -1,42 +1,43 @@
 ﻿@inject HttpClient http
 @inject IJSRuntime js
 
-    <EditForm Model="@sessao" OnValidSubmit="@OnValidSubmit">
-        <DataAnnotationsValidator></DataAnnotationsValidator>
-        <div class="form-group">
-            <label>Duração sessão :</label>
-            <div>
-                <InputNumber @bind-Value="@sessao.Duracao_Sessao" />
-                <ValidationMessage For="@(() => sessao.Duracao_Sessao)" />
-            </div>
+<EditForm Model="@sessao" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <div class="form-group">
+        <label>Duração sessão :</label>
+        <div>
+            <InputNumber @bind-Value="@sessao.Duracao_Sessao" />
+            <ValidationMessage For="@(() => sessao.Duracao_Sessao)" />
         </div>
-        <div class="form-group">
-            <label>Filme</label>
-            <div>
-                <RadzenDropDown AllowClear="true" TValue="int"
-                                Data="@(filmes.Select(f => new { FilmeId = f.Id, Titulo = f.Titulo}).Distinct())"
-                                TextProperty="Titulo" ValueProperty="FilmeId" Style="margin-bottom:20px" Change="@(args => ChangeFilme(args, sessao.FilmeId))"
-                                @bind-Value="sessao.FilmeId" />
-            </div>
+    </div>
+    <div class="form-group">
+        <label>Filme</label>
+        <div>
+            <RadzenDropDown AllowClear="true" TValue="int"
+                            Data="@(filmes.Select(f => new { FilmeId = f.Id, Titulo = f.Titulo}).Distinct())"
+                            TextProperty="Titulo" ValueProperty="FilmeId" Style="margin-bottom:20px" Change="@(args => ChangeFilme(args, sessao.FilmeId))"
+                            @bind-Value="sessao.FilmeId" />
         </div>
-        <div class="form-group">
-            <label>Tipo de Sala(Selecionar por Id >> Consultar a aba Sessão em caso de duvidas)</label>
-            <div>
-                <RadzenDropDown AllowClear="true" TValue="int"
-                                Data="@(salas.Select(s => new {SalaId = s.Id, NumPoltronas = s.NumPoltrona}).Distinct())"
-                                TextProperty="SalaId" ValueProperty="SalaId" Style="margin-bottom:20px" Change="@(args => ChangeSala(args, sessao.SalaId))"
-                                @bind-Value="sessao.SalaId" />
-            </div>
+    </div>
+    <div class="form-group">
+        <label>Tipo de Sala(Selecionar por Id)</label>
+        <div>
+            <RadzenDropDown AllowClear="true" TValue="int"
+                            Data="@(salas.Select(s => new {SalaId = s.Id, NumPoltronas = s.NumPoltrona}).Distinct())"
+                            TextProperty="SalaId" ValueProperty="SalaId" Style="margin-bottom:20px" Change="@(args => ChangeSala(args, sessao.SalaId))"
+                            @bind-Value="sessao.SalaId" />
         </div>
+    </div>
 
 
-        @if (sessao.FilmeId > 0 && sessao.SalaId > 0)
-        {
-            <button type="submit" class="btn btn-success">
-                @textoBotao
-            </button>
-        }
-    </EditForm>
+    @if (sessao.FilmeId > 0 && sessao.SalaId > 0)
+    {
+        <button type="submit" class="btn btn-success">
+            @textoBotao
+        </button>
+    }
+    <a href="Sessoes" class="btn btn-secondary">Voltar</a>
+</EditForm>
 
 
 @code {
