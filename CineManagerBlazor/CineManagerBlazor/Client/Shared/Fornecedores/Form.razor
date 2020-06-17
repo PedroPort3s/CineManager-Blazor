@@ -197,9 +197,25 @@
         </div>
     </div>
 
-    <button type="submit" class="btn btn-success">
-        @textoBotao
-    </button>
+
+    @if (forn.ListaEndereco.Count == 0) {
+        <input class="btn btn-secondary"
+               @onclick="(() => forn.ListaEndereco.Add(new Endereco()))"
+               value="Adicionar um endereço" readonly />
+    } else if (forn.ListaTelefone.Count == 0) {
+        <input class="btn btn-secondary"
+               @onclick="(() => forn.ListaTelefone.Add(new Telefone()))"
+               value="Adicionar um telefone" readonly />
+    } else if (forn.ListaEmail.Count == 0) {
+        <input class="btn btn-secondary"
+               @onclick="(() => forn.ListaEmail.Add(new Email()))"
+               value="Adicionar um telefone" readonly />
+    } else {
+        <button type="submit" class="btn btn-success">
+            @textoBotao
+        </button>
+    }
+    <a class="btn btn-success" href="fornecedores">Voltar</a>
 
 </EditForm>
 

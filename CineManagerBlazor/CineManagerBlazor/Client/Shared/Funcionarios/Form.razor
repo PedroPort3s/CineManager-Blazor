@@ -200,9 +200,21 @@
 
 
 
-    <button type="submit" class="btn btn-success">
-        @textoBotao
-    </button>
+    @if (funcionario.ListaEndereco.Count == 0) {
+        <input class="btn btn-secondary"
+               @onclick="(() => funcionario.ListaEndereco.Add(new Endereco()))"
+               value="Adicionar um endereço" readonly />
+    } else if (funcionario.ListaTelefone.Count == 0) {
+        <input class="btn btn-secondary"
+               @onclick="(() => funcionario.ListaTelefone.Add(new Telefone()))"
+               value="Adicionar um telefone" readonly />
+    } else {
+        <button type="submit" class="btn btn-success">
+            @textoBotao
+        </button>
+    }
+    <a class="btn btn-success" href="funcionarios">Voltar</a>
+
 </EditForm>
 
 @code {
