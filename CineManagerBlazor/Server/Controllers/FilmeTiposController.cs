@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CineManagerBlazor.Server;
 using CineManagerBlazor.Shared.Models;
 using CineManagerBlazor.Server.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CineManagerBlazor.Server.Controllers
 {
