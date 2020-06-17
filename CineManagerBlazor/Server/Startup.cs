@@ -76,6 +76,21 @@ namespace CineManagerBlazor.Server
             services.AddControllersWithViews();
             services.AddRazorPages();
 
+            //Autenticação do Google
+            services.AddAuthentication().AddGoogle(options =>
+            {
+                IConfigurationSection googleAutentication = Configuration.GetSection("Authentication:Google");
+
+                options.ClientId = googleAutentication["ClientId"];
+                options.ClientSecret = googleAutentication["ClientSecret"];
+            }).AddFacebook(facebookOptions => // Autenticação do Facebook
+            {
+                facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
+                facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+            });
+
+
+
             services.AddAutoMapper(typeof(Startup));
 
             services.AddMvc()
