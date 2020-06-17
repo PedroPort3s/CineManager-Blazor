@@ -18,8 +18,7 @@ namespace CineManagerBlazor.Shared.Models {
 
         [Display(Name = "Duração")]
         [Required(ErrorMessage = "O campo {0} é obrigatório!")]
-        [Column(TypeName = "int")]
-        [Range(20, 500, ErrorMessage = "O campo {0} deve conter entre {1} e {2} caracteres.")]
+        [Column(TypeName = "int")]        
         [RegularExpression(@"^(\d{1,3})$", ErrorMessage = "O campo {0} deve conter de 1 a 3 dígitos.")]
         public int Duracao { get; set; }
 
@@ -27,45 +26,15 @@ namespace CineManagerBlazor.Shared.Models {
         [Display(Name = "Data de lançamento")]
         [DataType(DataType.Date)]
         [Column(TypeName = "datetime")]
-        //Verificar. DataFormatString não está funcionando corretamente
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime Lancamento { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório!")]
         [Display(Name = "Em cartaz até")]
         [DataType(DataType.Date)]
         [Column(TypeName = "datetime")]
-        //Verificar. DataFormatString não está funcionando corretamente
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime EmCartazAte { get; set; }
 
         public List<FilmeGenero> Generos { get; set; } = new List<FilmeGenero>();
         public List<FilmeTipo> TiposFilme { get; set; } = new List<FilmeTipo>();
-
-        //[NotMapped]
-        //public string ListaGenerosJoin { get; set; }
-
-        //[NotMapped]
-        //public string ListaTiposJoin { get; set; }
-
-        //[NotMapped]
-        //public string ListaGenerosJoinPreserve { get; set; }
-
-        //[NotMapped]
-        //public string ListaTiposRemove { get; set; }
-
-        //[NotMapped]
-        //[Display(Name = "Tipo do filme")]
-        //public TipoFilme TipoFilme { get; set; }
-
-        //[NotMapped]
-        //[Display(Name = "Gênero")]
-        //public Genero Genero { get; set; }
-
-        //[NotMapped]
-        //public int GeneroId { get; set; }
-
-        //[NotMapped]
-        //public int TipoFilmeId { get; set; }
     }
 }

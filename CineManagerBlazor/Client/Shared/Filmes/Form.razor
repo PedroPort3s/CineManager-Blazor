@@ -1,58 +1,63 @@
 ﻿<EditForm Model="@filme" OnValidSubmit="@OnDataAnnotationsValidated">
     <DataAnnotationsValidator />
-    <div class="form-group">
-        <label>Titulo: </label>
-        <div>
-            <InputText @bind-Value="filme.Titulo" />
-            <ValidationMessage For="@(()=>filme.Titulo)" />
+    <div class="row">
+        <div class="form-group col-4">
+            <label>Titulo: </label>
+            <div>
+                <InputText @bind-Value="filme.Titulo" />
+                <ValidationMessage For="@(()=>filme.Titulo)" />
+            </div>
+        </div>
+        <div class="form-group col-4">
+            <label>Data de lançamento: </label>
+            <div>
+                <InputDate @bind-Value="filme.Lancamento" />
+                <ValidationMessage For="@(()=>filme.Lancamento)" />
+            </div>
+        </div>
+        <div class="form-group col-4">
+            <label>Em cartaz até: </label>
+            <div>
+                <InputDate @bind-Value="filme.EmCartazAte" />
+                <ValidationMessage For="@(()=>filme.EmCartazAte)" />
+            </div>
+        </div>
+        <div class="form-group col-4">
+            <label>Duração: </label>
+            <div>
+                <InputNumber @bind-Value="filme.Duracao" />
+                <ValidationMessage For="@(()=>filme.Duracao)" />
+            </div>
         </div>
     </div>
-    <div class="form-group">
-        <label>Data de lançamento: </label>
-        <div>
-            <InputDate @bind-Value="filme.Lancamento" />
-            <ValidationMessage For="@(()=>filme.Lancamento)" />
+    <div class="row">
+        <div class="form-group col-6">
+            <label>Generos: </label>
+            <div>
+                <MultipleSelect Selecionados="Selecionados" NaoSelecionados="NaoSelecionados"></MultipleSelect>
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label>Em cartaz até: </label>
-        <div>
-            <InputDate @bind-Value="filme.EmCartazAte" />
-            <ValidationMessage For="@(()=>filme.EmCartazAte)" />
-        </div>
-    </div>
-    <div class="form-group">
-        <label>Duração: </label>
-        <div>
-            <InputNumber @bind-Value="filme.Duracao" />
-            <ValidationMessage For="@(()=>filme.Duracao)" />
-        </div>
-    </div>
-    <div class="form-group">
-        <label>Generos: </label>
-        <div>
-            <MultipleSelect Selecionados="Selecionados" NaoSelecionados="NaoSelecionados"></MultipleSelect>
-        </div>
-    </div>
-    @if (TipoFilmes != null && TipoFilmes.Count > 0)
-    {
-        <div class="form-group">
-            @*<RadzenDropDown AllowClear="true" TValue="int"
-                Data="@(TipoFilmes.Select(x=> new { Id = x.Id, NomeTipoFilme = x.NomeTipoFilme } ).Distinct())"
-                TextProperty="NomeTipoFilme" Change="@(args => Change(args,ft.tipoFilmeId))" @bind-Value="@ft.tipoFilmeId"
-                ValueProperty="Id" Style="margin-bottom: 20px"/>*@
+        @if (TipoFilmes != null && TipoFilmes.Count > 0)
+        {
+            <div class="form-group col-6">
 
-            <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                            @bind-Value="multipleValues" Multiple="true" Placeholder="Selecione um ou vários..." Data="@TipoFilmes"
-                            TextProperty="NomeTipoFilme" ValueProperty="Id" Style="margin-bottom: 20px; width:400px;" />
+                <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                @bind-Value="multipleValues" Multiple="true" Placeholder="Selecione um ou vários..." Data="@TipoFilmes"
+                                TextProperty="NomeTipoFilme" ValueProperty="Id" Style="margin-bottom: 20px; width:400px;" />
 
-        </div>
-    }
+            </div>
+        }
+    </div>
 
-    @if (multipleValues != null && multipleValues.Count() > 0)
-    {
-        <button type="submit" class="btn btn-success">@textoBotao</button>
-    }
+    <div class="form-group">
+        @if (multipleValues != null && multipleValues.Count() > 0)
+        {
+            <button type="submit" class="btn btn-success">@textoBotao</button>
+        }
+
+        <a href="filmes" class="btn btn-secondary">Voltar</a>
+    </div>
+    
 
 </EditForm>
 

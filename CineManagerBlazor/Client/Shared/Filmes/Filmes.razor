@@ -9,7 +9,7 @@
 <h3>Filmes</h3>
 
 <div class="form-group">
-    <a class="btn btn-success" href="filme/create"><i class="oi oi-plus"></i>Novo Filme</a>
+    <a class="btn btn-success" href="filme/create"><i class="oi oi-plus"></i>&nbsp;Novo Filme</a>
 </div>
 <br />
 
@@ -23,30 +23,31 @@ else if (filmes.Length == 0)
 }
 else
 {
-    <table cass="table table-striped">
+    <table class="table table-striped">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Titulo</th>
-                <th>Duração</th>
-                <th>Data de Lançamento</th>
-                <th>Em cartaz até</th>
-                <th></th>
+                <th scope="col">ID</th>
+                <th scope="col">Titulo</th>
+                <th scope="col">Duração</th>
+                <th scope="col">Data de Lançamento</th>
+                <th scope="col">Em cartaz até</th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
             @foreach (Filme filme in filmes)
             {
-                <tr>
+                <tr>                    
                     <td>@filme.Id</td>
                     <td>@filme.Titulo</td>
                     <td>@filme.Duracao</td>
-                    <td>@filme.Lancamento</td>
-                    <td>@filme.EmCartazAte</td>
+                    <td>@filme.Lancamento.Date</td>
+                    <td>@filme.EmCartazAte.Date</td>
                     <td>
-                        <a class="btn btn-success" href="filme/edit/@filme.Id">Editar</a>
+                        <a class="btn btn-success" href="filme/edit/@filme.Id">Editar</a>&nbsp;&nbsp;
                         <button class="btn btn-danger" @onclick="@(() => Deletar(filme.Id))">Deletar</button>
                     </td>
+
                 </tr>
             }
         </tbody>
@@ -65,7 +66,7 @@ else
     {
         Filme filme = filmes.First(x => x.Id == filmeId);
 
-        if (await js.InvokeAsync<bool>("confirm", $"Deseja deletar o registro {filme.Titulo}"))
+        if (await js.InvokeAsync<bool>("confirm", $"Deseja deletar o filme? {filme.Titulo}?"))
         {
             await filmeRepo.DeletarFilme(filme.Id);
             await OnInitializedAsync();

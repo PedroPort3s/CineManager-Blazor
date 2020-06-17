@@ -5,37 +5,52 @@
 @inject IFilmeRepos filmesRepo
 @inject HttpClient http
 @inject NavigationManager uriHelper
+@inject IJSRuntime js
 
-<h3>Cadastrar um Filme</h3>
 
-@if (GenerosNaoSelecionados != null && TipoFilmes != null)
-{
-    <Form textoBotao="Cadastrar" filme="@filme" OnValidSubmit="@CriarFilme" TipoFilmes="@TipoFilmes" GenerosNaoSelecionados="GenerosNaoSelecionados"></Form>
-}
+    <div class="row">
+        <div class="form-group">
+            <h3>Cadastrar um Filme</h3>
+        </div>
+    </div>
 
-@code {
-    Filme filme = new Filme();
-
-    private List<Genero> GenerosNaoSelecionados;
-    private List<TipoFilme> TipoFilmes;
-
-    protected override async Task OnInitializedAsync()
+    @if (GenerosNaoSelecionados != null && TipoFilmes != null)
     {
-        GenerosNaoSelecionados = await http.GetFromJsonAsync<List<Genero>>("api/Generos");
-        TipoFilmes = await http.GetFromJsonAsync<List<TipoFilme>>("api/TipoFilmes");
+        <Form textoBotao="Cadastrar" filme="@filme" OnValidSubmit="@CriarFilme" TipoFilmes="@TipoFilmes" GenerosNaoSelecionados="GenerosNaoSelecionados"></Form>
     }
 
-    async Task CriarFilme()
-    {
-        try
+    @code {
+        Filme filme = new Filme();
+
+        private List<Genero> GenerosNaoSelecionados;
+        private List<TipoFilme> TipoFilmes;
+
+        protected override async Task OnInitializedAsync()
         {
-            await filmesRepo.CriarFilme(filme);
-            uriHelper.NavigateTo("Filmes");
+            GenerosNaoSelecionados = await http.GetFromJsonAsync<List<Genero>>("api/Generos");
+            TipoFilmes = await http.GetFromJsonAsync<List<TipoFilme>>("api/TipoFilmes");
         }
-        catch (Exception)
+
+        async Task CriarFilme()
         {
+            try
+            {
+                if (DateTime.Compare(filme.EmCartazAte, filme.Lancamento) < 0)
+                {
+                    throw new Exception("A data de Lancamento não pode ser maior que a data de final da exibição! ");
+                }
 
+                if (filme.Generos.Count == 0)
+                {
+                    throw new Exception("É obrigatório pelo menos um Genero por filme!");
+                }
 
+                await filmesRepo.CriarFilme(filme);
+                uriHelper.NavigateTo("Filmes");
+            }
+            catch (Exception ex)
+            {
+                await js.InvokeVoidAsync("alert", ex.Message);
+            }
         }
     }
-}
