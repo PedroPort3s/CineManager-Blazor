@@ -1,0 +1,107 @@
+﻿@page "/fornecedores"
+@inject IRepository repo
+@inject IFornecedorRepos FornRepos
+@inject IJSRuntime js
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+
+<h3>Fornecedores</h3>
+<h6>Cadastrar novo fornecedor</h6>
+
+<div class="form-group">
+    <a class="btn btn-success" href="fornecedores/create"><i class="oi oi-plus"></i>Cadastrar</a>
+</div>
+<br />
+
+@if (fornecedores == null)
+{
+    <text>Carregando...</text>
+}
+else if (fornecedores.Length == 0)
+{
+    <text>Nenhum registro encontrado</text>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Responsavel</th>
+                <th>Endereços</th>
+                <th>Telefones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Fornecedor forn in fornecedores)
+            {
+                <tr>
+                    <td>@forn.NomeDaEmpresa</td>
+                    <td>@forn.NomeResponsavel</td>
+                    <td>
+                        <table>
+                            @foreach (Endereco end in forn.ListaEndereco)
+                            {
+                                <tr>
+                                    <td>
+                                        @end.NomeLogradouro @end.Numero - @end.Cep
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
+                    <td>
+                        <table>
+                            @foreach (Telefone tel in forn.ListaTelefone)
+                            {
+                                <tr>
+                                    <td>
+                                        +@tel.DDI (@tel.DDD) @tel.Numero
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
+                    <td>
+                        <table>
+                            @foreach (Email email in forn.ListaEmail)
+                            {
+                                <tr>
+                                    <td>
+                                        @email.EnderecoEmail
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
+                    <td>
+                        <a class="btn btn-success" href="fornecedores/edit/@forn.Id">Editar</a>
+                        <button class="btn btn-danger" @onclick="@(() => Delete(forn.Id))">Excluir</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+
+@code {
+
+    Fornecedor[] fornecedores { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        fornecedores = await repo.GetFornecedores();
+    }
+
+    async Task Delete(int fornecedorId)
+    {
+        var forn = fornecedores.First(x => x.Id == fornecedorId);
+        if (await js.InvokeAsync<bool>("confirm", $"Deseja excluir o fornecedor com o id: {forn.Id} ?"))
+        {
+            await FornRepos.DeletarFornecedor(fornecedorId);
+            await OnInitializedAsync();
+        }
+    }
+}

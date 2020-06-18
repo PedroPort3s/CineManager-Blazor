@@ -1,0 +1,54 @@
+﻿@page "/fornecedores/edit/{fornecedorId:int}"
+@inject HttpClient http
+@inject NavigationManager uriHelper
+@inject IJSRuntime js
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+
+<h3>Editar</h3>
+@if (forn != null)
+{
+    <Form textoBotao="Atualizar" forn="forn" OnValidSubmit="@EditFornecedor"></Form>
+}
+
+@code {
+    [Parameter] public int fornecedorId { get; set; }
+    public List<Endereco> ListEndRemove { get; set; } = new List<Endereco>();
+    public List<Telefone> ListTelRemove { get; set; } = new List<Telefone>();
+    public List<Email> ListEmailRemove { get; set; } = new List<Email>();
+    Fornecedor forn = new Fornecedor();
+    Fornecedor fornBase = new Fornecedor();
+
+    protected override async Task OnInitializedAsync()
+    {
+        forn = await http.GetFromJsonAsync<Fornecedor>($"api/fornecedores/{fornecedorId}");
+        fornBase = await http.GetFromJsonAsync<Fornecedor>($"api/fornecedores/{fornecedorId}");
+        if (ListEmailRemove.Count != 0)
+        {
+            ListEndRemove = forn.ListaEndereco;
+        }
+        ListTelRemove = forn.ListaTelefone;
+        ListEmailRemove = forn.ListaEmail;
+    }
+
+    async Task EditFornecedor()
+    {
+        try
+        {
+            AtualizarFornecedorDTO attForn = new AtualizarFornecedorDTO()
+            {
+                Fornecedor = forn,
+                FornecedorBase = fornBase,
+            };
+
+            await http.PutAsJsonAsync($"api/fornecedores/{forn.Id}", attForn);
+            await js.InvokeVoidAsync("alert", $"Fornecedor {forn.NomeDaEmpresa} atualizado com sucesso");
+            uriHelper.NavigateTo("Fornecedores");
+        }
+        catch (Exception ex)
+        {
+            await js.InvokeVoidAsync("alert", "DEU RUIM ++++++++++++++++" + ex.Message);
+        }
+    }
+}

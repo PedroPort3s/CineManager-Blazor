@@ -1,0 +1,75 @@
+﻿@page "/filmes"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+@inject IRepository repo
+@inject IJSRuntime js
+@inject IFilmeRepos filmeRepo
+
+<h3>Filmes</h3>
+
+<div class="form-group">
+    <a class="btn btn-success" href="filme/create"><i class="oi oi-plus"></i>&nbsp;Novo Filme</a>
+</div>
+<br />
+
+@if (filmes == null)
+{
+    <text>Carregando... </text>
+}
+else if (filmes.Length == 0)
+{
+    <text>Sem filmes cadastrados</text>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Titulo</th>
+                <th scope="col">Duração</th>
+                <th scope="col">Data de Lançamento</th>
+                <th scope="col">Em cartaz até</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Filme filme in filmes)
+            {
+                <tr>                    
+                    <td>@filme.Id</td>
+                    <td>@filme.Titulo</td>
+                    <td>@filme.Duracao</td>
+                    <td>@filme.Lancamento.Date</td>
+                    <td>@filme.EmCartazAte.Date</td>
+                    <td>
+                        <a class="btn btn-success" href="filme/edit/@filme.Id">Editar</a>&nbsp;&nbsp;
+                        <button class="btn btn-danger" @onclick="@(() => Deletar(filme.Id))">Deletar</button>
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    Filme[] filmes { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        filmes = await repo.GetFilmes();
+    }
+
+    async Task Deletar(int filmeId)
+    {
+        Filme filme = filmes.First(x => x.Id == filmeId);
+
+        if (await js.InvokeAsync<bool>("confirm", $"Deseja deletar o filme? {filme.Titulo}?"))
+        {
+            await filmeRepo.DeletarFilme(filme.Id);
+            await OnInitializedAsync();
+        }
+    }
+}

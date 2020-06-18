@@ -1,0 +1,63 @@
+﻿@page "/filme/edit/{filmeId:int}"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+@inject IFilmeRepos filmeRepo
+@inject NavigationManager uriHelper
+@inject IJSRuntime js
+@inject HttpClient http
+
+
+<div class="row">
+    <div class="form-group">
+        <h3>Editar um Filme</h3>
+    </div>
+</div>
+
+@if (filme != null)
+{
+    <Form textoBotao="Atualizar" filme="filme" OnValidSubmit="EditarFilme" GenerosNaoSelecionados="GenerosNaoSelecionados" TipoFilmes="tiposFilme" GenerosSelecionados="GenerosSelecionados" />
+}
+
+@code {
+    [Parameter] public int filmeID { get; set; }
+    Filme filme;
+
+    private List<Genero> GenerosNaoSelecionados = new List<Genero>();
+    private List<Genero> GenerosSelecionados = new List<Genero>();
+    private List<TipoFilme> tiposFilme = new List<TipoFilme>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var edit = await filmeRepo.GetFilmeAtualizar(filmeID);
+        filme = edit.Filme;
+        GenerosNaoSelecionados = edit.GenerosNaoSelecionados;
+        GenerosSelecionados = edit.GenerosSelecionados;
+        //tipoFilmeSel = edit.tiposDoFilme;
+        tiposFilme = await http.GetFromJsonAsync<List<TipoFilme>>("api/TipoFilmes");
+    }
+
+    async Task EditarFilme()
+    {
+        try
+        {
+            if (DateTime.Compare(filme.EmCartazAte, filme.Lancamento) < 0)
+            {
+                throw new Exception("A data de Lancamento não pode ser maior que a data de final da exibição! ");
+            }
+
+            if (filme.Generos.Count == 0)
+            {
+                throw new Exception("É obrigatório pelo menos um Genero por filme!");
+            }
+
+            await filmeRepo.AtualizarFilme(filme);
+            await js.InvokeVoidAsync("alert", $"Filme {filme.Titulo} atualizado com sucesso!");
+            uriHelper.NavigateTo("filmes");
+        }
+        catch (Exception ex)
+        {
+            await js.InvokeVoidAsync("alert", ex.Message);
+        }
+    }
+}
