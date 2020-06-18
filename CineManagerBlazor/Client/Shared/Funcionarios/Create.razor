@@ -1,9 +1,10 @@
 ﻿@page "/funcionarios/create"
+@inject HttpClient http
+@inject IFuncionarioRepos funcRepo
+@inject NavigationManager uriHelper
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @attribute [Authorize]
-@inject HttpClient http
-@inject NavigationManager uriHelper
 
 <h3>Criar</h3>
 
@@ -14,7 +15,8 @@
     Funcionario funcionario = new Funcionario();
     async Task CreateFuncionario()
     {
-        await http.PostAsJsonAsync("api/Funcionarios", funcionario);
+        //await funcRepo.CriarFuncionario(funcionario);
+        await http.PostAsJsonAsync("api/funcionarios", funcionario);
         uriHelper.NavigateTo("Funcionarios");
     }
 }

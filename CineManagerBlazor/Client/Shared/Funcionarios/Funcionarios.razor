@@ -1,9 +1,9 @@
 ﻿@page "/funcionarios"
+@inject HttpClient client
+@inject IJSRuntime js
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @attribute [Authorize]
-@inject HttpClient client
-@inject IJSRuntime js
 
 <h3>Funcionários</h3>
 <h6>Cadastrar funcionários</h6>
@@ -32,6 +32,8 @@ else
                 <th>Salário</th>
                 <th>Cargo</th>
                 <th>Turno</th>
+                <th>Endereços</th>
+                <th>Telefones</th>
             </tr>
         </thead>
         <tbody>
@@ -40,12 +42,35 @@ else
                 <tr>
                     <td>@func.NomeCompleto</td>
                     <td>@func.Setor</td>
-                    <td>@func.Cargo</td>
                     <td>@func.Cpf</td>
                     <td>@func.Rg</td>
                     <td>@func.Salario</td>
                     <td>@func.Cargo</td>
                     <td>@func.Turno</td>
+                    <td>
+                        <table>
+                            @foreach (Endereco end in func.ListaEndereco)
+                            {
+                                <tr>
+                                    <td>
+                                        @end.NomeLogradouro @end.Numero - @end.Cep
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
+                    <td>
+                        <table>
+                            @foreach (Telefone tel in func.ListaTelefone)
+                            {
+                                <tr>
+                                    <td>
+                                        +@tel.DDI (@tel.DDD) @tel.Numero
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
                     <td>
                         <a class="btn btn-success" href="funcionarios/edit/@func.Id">Editar</a>
                         <button class="btn btn-danger" @onclick="@(() => Delete(func.Id))">Excluir</button>
@@ -71,7 +96,7 @@ else
 
         if (await js.InvokeAsync<bool>("confirm", $"Tem certeza que deseja excluir o funcionario {func.NomeCompleto} ?")) ;
         {
-            await client.DeleteAsync($"api/funcionario/{funcionarioId}");
+            await client.DeleteAsync($"api/funcionarios/{funcionarioId}");
             await OnInitializedAsync();
         }
     }

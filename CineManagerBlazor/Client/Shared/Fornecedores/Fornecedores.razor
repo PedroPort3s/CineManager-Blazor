@@ -1,9 +1,10 @@
 ﻿@page "/fornecedores"
+@inject IRepository repo
+@inject IFornecedorRepos FornRepos
+@inject IJSRuntime js
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @attribute [Authorize]
-@inject HttpClient client
-@inject IJSRuntime js
 
 <h3>Fornecedores</h3>
 <h6>Cadastrar novo fornecedor</h6>
@@ -28,6 +29,8 @@ else
             <tr>
                 <th>Nome</th>
                 <th>Responsavel</th>
+                <th>Endereços</th>
+                <th>Telefones</th>
             </tr>
         </thead>
         <tbody>
@@ -36,7 +39,42 @@ else
                 <tr>
                     <td>@forn.NomeDaEmpresa</td>
                     <td>@forn.NomeResponsavel</td>
-
+                    <td>
+                        <table>
+                            @foreach (Endereco end in forn.ListaEndereco)
+                            {
+                                <tr>
+                                    <td>
+                                        @end.NomeLogradouro @end.Numero - @end.Cep
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
+                    <td>
+                        <table>
+                            @foreach (Telefone tel in forn.ListaTelefone)
+                            {
+                                <tr>
+                                    <td>
+                                        +@tel.DDI (@tel.DDD) @tel.Numero
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
+                    <td>
+                        <table>
+                            @foreach (Email email in forn.ListaEmail)
+                            {
+                                <tr>
+                                    <td>
+                                        @email.EnderecoEmail
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
                     <td>
                         <a class="btn btn-success" href="fornecedores/edit/@forn.Id">Editar</a>
                         <button class="btn btn-danger" @onclick="@(() => Delete(forn.Id))">Excluir</button>
@@ -50,17 +88,19 @@ else
 
 
 @code {
+
     Fornecedor[] fornecedores { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        fornecedores = await client.GetFromJsonAsync<Fornecedor[]>("api/Fornecedores");
+        fornecedores = await repo.GetFornecedores();
     }
+
     async Task Delete(int fornecedorId)
     {
         var forn = fornecedores.First(x => x.Id == fornecedorId);
-        if (await js.InvokeAsync<bool>("confirm", $"Deseja excluir o fornecedor com o id: {forn.Id} ?")) ;
+        if (await js.InvokeAsync<bool>("confirm", $"Deseja excluir o fornecedor com o id: {forn.Id} ?"))
         {
-            await client.DeleteAsync($"api/fornecedores/{fornecedorId}");
+            await FornRepos.DeletarFornecedor(fornecedorId);
             await OnInitializedAsync();
         }
     }

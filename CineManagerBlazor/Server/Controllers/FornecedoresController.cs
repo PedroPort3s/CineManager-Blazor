@@ -7,38 +7,37 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CineManagerBlazor.Server;
 using CineManagerBlazor.Shared.Models;
+using CineManagerBlazor.Shared.DTOs;
 using CineManagerBlazor.Server.Data;
 using Microsoft.AspNetCore.Authorization;
 
-namespace CineManagerBlazor.Server.Controllers
-{
+namespace CineManagerBlazor.Server.Controllers {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class FornecedoresController : ControllerBase
-    {
+    public class FornecedoresController : ControllerBase {
         private readonly AppDbContext _context;
 
-        public FornecedoresController(AppDbContext context)
-        {
+        public FornecedoresController(AppDbContext context) {
             _context = context;
         }
 
         // GET: api/Fornecedores
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Fornecedor>>> GetFornecedor()
-        {
-            return await _context.Fornecedor.ToListAsync();
+        public async Task<ActionResult<Fornecedor[]>> GetFornecedor() {
+            return await _context.Fornecedor.Include(x => x.ListaEndereco).
+                Include(x => x.ListaTelefone).
+                Include(x => x.ListaEmail).
+                ToArrayAsync();
         }
 
         // GET: api/Fornecedores/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Fornecedor>> GetFornecedor(int id)
-        {
-            var fornecedor = await _context.Fornecedor.FindAsync(id);
+        public async Task<ActionResult<Fornecedor>> GetFornecedor(int id) {
+            var fornecedor = await _context.Fornecedor.Include(x => x.ListaEndereco).Include(x => x.ListaTelefone).
+                Include(x => x.ListaEmail).FirstOrDefaultAsync(x => x.Id == id);
 
-            if (fornecedor == null)
-            {
+            if (fornecedor == null) {
                 return NotFound();
             }
 
@@ -49,27 +48,27 @@ namespace CineManagerBlazor.Server.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutFornecedor(int id, Fornecedor fornecedor)
-        {
-            if (id != fornecedor.Id)
-            {
+        public async Task<IActionResult> PutFornecedor(int id, AtualizarFornecedorDTO fornDTO) {
+            if (id != fornDTO.Fornecedor.Id) {
                 return BadRequest();
             }
 
-            _context.Entry(fornecedor).State = EntityState.Modified;
+            _context.RemoveRange(fornDTO.FornecedorBase.ListaEndereco);
+            _context.RemoveRange(fornDTO.FornecedorBase.ListaTelefone);
+            _context.RemoveRange(fornDTO.FornecedorBase.ListaEmail);
 
-            try
-            {
+            _context.AddRange(fornDTO.Fornecedor.ListaEndereco);
+            _context.AddRange(fornDTO.Fornecedor.ListaTelefone);
+            _context.AddRange(fornDTO.Fornecedor.ListaEmail);
+
+            _context.Entry(fornDTO.Fornecedor).State = EntityState.Modified;
+
+            try {
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FornecedorExists(id))
-                {
+            } catch (DbUpdateConcurrencyException) {
+                if (!FornecedorExists(id)) {
                     return NotFound();
-                }
-                else
-                {
+                } else {
                     throw;
                 }
             }
@@ -81,8 +80,7 @@ namespace CineManagerBlazor.Server.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Fornecedor>> PostFornecedor(Fornecedor fornecedor)
-        {
+        public async Task<ActionResult<Fornecedor>> PostFornecedor(Fornecedor fornecedor) {
             _context.Fornecedor.Add(fornecedor);
             await _context.SaveChangesAsync();
 
@@ -91,22 +89,25 @@ namespace CineManagerBlazor.Server.Controllers
 
         // DELETE: api/Fornecedores/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Fornecedor>> DeleteFornecedor(int id)
-        {
-            var fornecedor = await _context.Fornecedor.FindAsync(id);
-            if (fornecedor == null)
-            {
+        public async Task<ActionResult<Fornecedor>> DeleteFornecedor(int id) {
+            var fornecedor = await _context.Fornecedor.Include(x => x.ListaEndereco).
+                Include(x => x.ListaTelefone).Include(x => x.ListaEmail)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (fornecedor == null) {
                 return NotFound();
             }
 
-            _context.Fornecedor.Remove(fornecedor);
-            await _context.SaveChangesAsync();
+            _context.RemoveRange(fornecedor.ListaEndereco);
+            _context.RemoveRange(fornecedor.ListaTelefone);
+            _context.RemoveRange(fornecedor.ListaEmail);
+
+            _context.Entry(fornecedor).State = EntityState.Deleted;
+            _context.SaveChanges();
 
             return fornecedor;
         }
 
-        private bool FornecedorExists(int id)
-        {
+        private bool FornecedorExists(int id) {
             return _context.Fornecedor.Any(e => e.Id == id);
         }
     }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CineManagerBlazor.Server;
 using CineManagerBlazor.Shared.Models;
+using CineManagerBlazor.Shared.DTOs;
 using CineManagerBlazor.Server.Data;
 using Microsoft.AspNetCore.Authorization;
 
@@ -28,14 +29,17 @@ namespace CineManagerBlazor.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Funcionario>>> GetFuncionario()
         {
-            return await _context.Funcionario.ToListAsync();
+            return await _context.Funcionario.Include(x => x.ListaEndereco).
+                Include(x => x.ListaTelefone).ToListAsync();
         }
 
         // GET: api/Funcionarios/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Funcionario>> GetFuncionario(int id)
         {
-            var funcionario = await _context.Funcionario.FindAsync(id);
+            var funcionario = await _context.Funcionario.
+                Include(x => x.ListaEndereco).Include(x => x.ListaTelefone).
+                FirstOrDefaultAsync(x => x.Id == id);
 
             if (funcionario == null)
             {
@@ -49,14 +53,20 @@ namespace CineManagerBlazor.Server.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutFuncionario(int id, Funcionario funcionario)
+        public async Task<IActionResult> PutFuncionario(int id, AtualizarFuncionarioDTO funcDTO)
         {
-            if (id != funcionario.Id)
+            if (id != funcDTO.Funcionario.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(funcionario).State = EntityState.Modified;
+            _context.RemoveRange(funcDTO.FuncionarioBase.ListaEndereco);
+            _context.RemoveRange(funcDTO.FuncionarioBase.ListaTelefone);
+
+            _context.AddRange(funcDTO.Funcionario.ListaEndereco);
+            _context.AddRange(funcDTO.Funcionario.ListaTelefone);
+
+            _context.Entry(funcDTO.Funcionario).State = EntityState.Modified;
 
             try
             {
@@ -93,13 +103,17 @@ namespace CineManagerBlazor.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Funcionario>> DeleteFuncionario(int id)
         {
-            var funcionario = await _context.Funcionario.FindAsync(id);
+            var funcionario = await _context.Funcionario.Include(x => x.ListaEndereco).
+                Include(x => x.ListaTelefone).FirstOrDefaultAsync(x => x.Id == id);
             if (funcionario == null)
             {
                 return NotFound();
             }
 
-            _context.Funcionario.Remove(funcionario);
+            _context.RemoveRange(funcionario.ListaEndereco);
+            _context.RemoveRange(funcionario.ListaTelefone);
+
+            _context.Entry(funcionario).State = EntityState.Deleted;
             await _context.SaveChangesAsync();
 
             return funcionario;

@@ -1,70 +1,220 @@
 ﻿<EditForm Model="@funcionario" OnValidSubmit="@OnValidSubmit">
     <DataAnnotationsValidator />
+
     <div class="form-group">
-        <label>Nome</label>
-        <div>
-            <InputText @bind-Value="@funcionario.NomeCompleto" />
-            <ValidationMessage For="@(() => funcionario.NomeCompleto)" />
-        </div>
-    </div>
-    <div class="form-group">
-        <div>
-            <label>Setor</label>
-        </div>
-        <div>
-            <InputText @bind-Value="@funcionario.Setor" />
-            <ValidationMessage For="@(() => funcionario.Setor)" />
-        </div>
-    </div>
-    <div class="form-group">
-        <div>
-            <label>Cpf</label>
-        </div>
-        <div>
-            <InputNumber @bind-Value="@funcionario.Cpf" />
-            <ValidationMessage For="@(() => funcionario.Cpf)" />
-        </div>
-    </div>
-    <div class="form-group">
-        <div>
-            <label>Rg</label>
-        </div>
-        <div>
-            <InputNumber @bind-Value="@funcionario.Rg" />
-            <ValidationMessage For="@(() => funcionario.Rg)" />
-        </div>
-    </div>
-    <div class="form-group">
-        <div>
-            <label>Salário</label>
-        </div>
-        <div>
-            <InputText @bind-Value="@funcionario.Salario" />
-            <ValidationMessage For="@(() => funcionario.Salario)" />
-        </div>
-    </div>
-    <div class="form-group">
-        <div>
-            <label>Cargo</label>
-        </div>
-        <div>
-            <InputText @bind-Value="@funcionario.Cargo" />
-            <ValidationMessage For="@(() => funcionario.Cargo)" />
-        </div>
-    </div>
-    <div class="form-group">
-        <div>
-            <label>Turno</label>
-        </div>
-        <div>
-            <InputText @bind-Value="@funcionario.Turno" />
-            <ValidationMessage For="@(() => funcionario.Turno)" />
+        <div class="row">
+            <div class="col">
+                <label>Nome</label>
+                <div>
+                    <InputText @bind-Value="@funcionario.NomeCompleto" />
+                    <ValidationMessage For="@(() => funcionario.NomeCompleto)" />
+                </div>
+            </div>
+            <div class="col">
+                <label>Setor</label>
+                <div>
+                    <InputText @bind-Value="@funcionario.Setor" />
+                    <ValidationMessage For="@(() => funcionario.Setor)" />
+                </div>
+            </div>
+            <div class="col">
+                <label>Cpf</label>
+                <div>
+                    <InputNumber @bind-Value="@funcionario.Cpf" />
+                    <ValidationMessage For="@(() => funcionario.Cpf)" />
+                </div>
+            </div>
+            <div class="col">
+                <label>Rg</label>
+                <div>
+                    <InputNumber @bind-Value="@funcionario.Rg" />
+                    <ValidationMessage For="@(() => funcionario.Rg)" />
+                </div>
+            </div>
+            <div class="col">
+                <label>Cargo</label>
+                <div>
+                    <InputText @bind-Value="@funcionario.Cargo" />
+                    <ValidationMessage For="@(() => funcionario.Cargo)" />
+                </div>
+            </div>
+            <div class="col">
+                <label>Turno</label>
+                <div>
+                    <InputText @bind-Value="@funcionario.Turno" />
+                    <ValidationMessage For="@(() => funcionario.Turno)" />
+                </div>
+            </div>
+            <div class="col">
+                <label>Salário</label>
+                <div>
+                    <InputText @bind-Value="@funcionario.Salario" />
+                    <ValidationMessage For="@(() => funcionario.Salario)" />
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <button type="submit" class="btn btn-success">
-        @textoBotao
-    </button>
+    <div class="form-group">
+        <div class="row">
+            <div class="form-group">
+                <input class="btn btn-secondary"
+                       @onclick="(() => funcionario.ListaEndereco.Add(new Endereco()))"
+                       value="Adicionar um endereço" readonly />
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                @for (int i = 0; i < funcionario.ListaEndereco.Count; i++) {
+                    int index = i;
+                    Endereco end;
+                    if (funcionario.ListaEndereco[i] != null) {
+                        end = funcionario.ListaEndereco[i];
+                        <div class="container">
+                            <div class="row">
+                                <div class="col">
+                                    <p>Tipo de logradouro</p>
+                                    <InputText @bind-Value="end.TipoLogradouro" />
+                                    <ValidationMessage For="@(() => end.TipoLogradouro)" />
+                                </div>
+                                <div class="col">
+                                    <p>Nome logradouro</p>
+                                    <InputText @bind-Value="end.NomeLogradouro" />
+                                    <ValidationMessage For="@(() => end.NomeLogradouro)" />
+                                </div>
+                                <div class="col">
+                                    <p>N°</p>
+                                    <InputNumber @bind-Value="end.Numero" />
+                                    <ValidationMessage For="@(() => end.Numero)" />
+                                </div>
+                                <div class="col">
+                                    <p>Complemento</p>
+                                    <InputText @bind-Value="end.Complemento" />
+                                    <ValidationMessage For="@(() => end.Complemento)" />
+                                </div>
+                                <div class="col">
+                                    <p>Tipo</p>
+                                    <InputText @bind-Value="end.TipoEndereco" />
+                                    <ValidationMessage For="@(() => end.TipoEndereco)" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <p>Cep</p>
+                                    <InputText @bind-Value="end.Cep" />
+                                    <ValidationMessage For="@(() => end.Cep)" />
+                                </div>
+                                <div class="col">
+                                    <p>Bairro</p>
+                                    <InputText @bind-Value="end.Bairro" />
+                                    <ValidationMessage For="@(() => end.Bairro)" />
+                                </div>
+                                <div class="col">
+                                    <p>Cidade</p>
+                                    <InputText @bind-Value="end.Cidade" />
+                                    <ValidationMessage For="@(() => end.Cidade)" />
+                                </div>
+                                <div class="col">
+                                    <p>Estado</p>
+                                    <InputText @bind-Value="end.Estado" />
+                                    <ValidationMessage For="@(() => end.Estado)" />
+                                </div>
+                                <div class="col">
+                                    <p>País</p>
+                                    <InputText @bind-Value="end.Pais" />
+                                    <ValidationMessage For="@(() => end.Pais)" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <button type="button" class="btn btn-danger"
+                                            @onclick="@(() => funcionario.ListaEndereco.RemoveAt(index))">
+                                        Remover endereço
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="form-group">
+                <input class="btn btn-secondary"
+                       @onclick="(() => funcionario.ListaTelefone.Add(new Telefone()))"
+                       value="Adicionar um telefone" readonly />
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                @for (int i = 0; i < funcionario.ListaTelefone.Count; i++) {
+                    int index = i;
+                    Telefone tel;
+                    if (funcionario.ListaTelefone[i] != null) {
+                        tel = funcionario.ListaTelefone[i];
+                        <div class="container">
+                            <div class="row">
+                                <div class="col">
+                                    <p>DDI</p>
+                                    <InputText @bind-Value="tel.DDI" />
+                                    <ValidationMessage For="@(() => tel.DDI)" />
+                                </div>
+                                <div class="col">
+                                    <p>DDD</p>
+                                    <InputNumber @bind-Value="tel.DDD" />
+                                    <ValidationMessage For="@(() => tel.DDD)" />
+                                </div>
+                                <div class="col">
+                                    <p>Numero telefone</p>
+                                    <InputNumber @bind-Value="tel.Numero" />
+                                    <ValidationMessage For="@(() => tel.Numero)" />
+                                </div>
+                                <div class="col">
+                                    <p>Tipo</p>
+                                    <InputSelect @bind-Value="tel.Tipo">
+                                        <option value="Fixo">Fixo</option>
+                                        <option value="Celular">Celular</option>
+                                    </InputSelect>
+                                    <ValidationMessage For="@(() => tel.Tipo)" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <button type="button" class="btn btn-danger"
+                                            @onclick="@(() => funcionario.ListaTelefone.RemoveAt(index))">
+                                        Remover telefone
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+
+
+    @if (funcionario.ListaEndereco.Count == 0) {
+        <input class="btn btn-secondary"
+               @onclick="(() => funcionario.ListaEndereco.Add(new Endereco()))"
+               value="Adicionar um endereço" readonly />
+    } else if (funcionario.ListaTelefone.Count == 0) {
+        <input class="btn btn-secondary"
+               @onclick="(() => funcionario.ListaTelefone.Add(new Telefone()))"
+               value="Adicionar um telefone" readonly />
+    } else {
+        <button type="submit" class="btn btn-success">
+            @textoBotao
+        </button>
+    }
+    <a class="btn btn-success" href="funcionarios">Voltar</a>
+
 </EditForm>
 
 @code {

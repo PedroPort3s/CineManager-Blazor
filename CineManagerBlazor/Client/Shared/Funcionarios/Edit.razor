@@ -1,26 +1,43 @@
 ﻿@page "/funcionarios/edit/{funcionarioId:int}"
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@attribute [Authorize]
 @inject HttpClient http
 @inject NavigationManager uriHelper
 @inject IJSRuntime js
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+
 
 <h3>Editar</h3>
 
-<Form ButtonText="Atualizar" func="func" OnValidSubmit="@EditFuncionario" />
+<Form textoBotao="Atualizar" funcionario="func" OnValidSubmit="@EditFuncionario" />
 
 @code {
     [Parameter] public int funcionarioId { get; set; }
     Funcionario func = new Funcionario();
+    Funcionario funcBase = new Funcionario();
+
     protected async override Task OnParametersSetAsync()
     {
         func = await http.GetFromJsonAsync<Funcionario>($"api/funcionarios/{funcionarioId}");
+        funcBase = await http.GetFromJsonAsync<Funcionario>($"api/funcionarios/{funcionarioId}");
     }
     async Task EditFuncionario()
     {
-        await http.PutAsJsonAsync("api/funcionarios", func);
-        await js.InvokeVoidAsync("alert", $"ATUALIZADO COM SUCESSO!");
-        uriHelper.NavigateTo("funcionarios");
+        AtualizarFuncionarioDTO attFunc = new AtualizarFuncionarioDTO()
+        {
+            Funcionario = func,
+            FuncionarioBase = funcBase
+        };
+
+        try
+        {
+            await http.PutAsJsonAsync($"api/funcionarios/{func.Id}", attFunc);
+            await js.InvokeVoidAsync("alert", $"Funcionario {func.NomeCompleto} atualizado com sucesso");
+            uriHelper.NavigateTo("funcionarios");
+        }
+        catch (Exception ex)
+        {
+            await js.InvokeVoidAsync("alert", "Deu ruim ++++++++++++++++" + ex.Message);
+        }
     }
 }
